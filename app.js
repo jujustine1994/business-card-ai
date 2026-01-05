@@ -25,13 +25,16 @@ const App = {
             saveSettingsBtn: document.getElementById('save-settings'),
             apiKeyInput: document.getElementById('api-key'),
             demoModeInput: document.getElementById('demo-mode'),
-            loadingOverlay: document.getElementById('loading-overlay')
+            loadingOverlay: document.getElementById('loading-overlay'),
+            // Search elements
+            searchInput: document.getElementById('search-input'),
+            clearSearchBtn: document.getElementById('clear-search')
         };
     },
 
     bindEvents() {
         this.dom.cameraInput.addEventListener('change', (e) => this.handleFileUpload(e));
-
+        
         // Modal Events
         this.dom.settingsBtn.addEventListener('click', () => {
             this.dom.modal.classList.add('visible');
@@ -46,13 +49,25 @@ const App = {
         this.dom.saveSettingsBtn.addEventListener('click', () => {
             const key = this.dom.apiKeyInput.value.trim();
             const isDemo = this.dom.demoModeInput.checked;
-
+            
             window.aiService.setApiKey(key);
             window.aiService.setDemoMode(isDemo);
-
+            
             alert('設定已儲存');
             this.dom.modal.classList.remove('visible');
             setTimeout(() => this.dom.modal.classList.add('hidden'), 200);
+        });
+
+        // Search Events
+        this.dom.searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            this.handleSearch(query);
+        });
+
+        this.dom.clearSearchBtn.addEventListener('click', () => {
+            this.dom.searchInput.value = '';
+            this.handleSearch('');
+            this.dom.searchInput.focus();
         });
     },
 
@@ -131,12 +146,69 @@ const App = {
         }
     },
 
-    render() {
+    handleSearch(query) {
+        if (!query) {
+            this.dom.clearSearchBtn.classList.add('hidden');
+            this.render(this.data); // Render all data
+            return;
+        }
+
+        this.dom.clearSearchBtn.classList.remove('hidden');
+        const lowerQuery = query.toLowerCase();
+
+        // Deep filter logic
+        const filteredData = this.data.map(companyGroup => {
+            // Check if company name matches
+            const companyMatch = (companyGroup.company || '').toLowerCase().includes(lowerQuery);
+
+            if (companyMatch) {
+                // If company matches, show all people (or could choose to still filter people, but usually showing all is better context)
+                return companyGroup; 
+            }
+
+            // Filter people within the company
+            const matchingPeople = companyGroup.people.filter(person => {
+                const nameMatch = (person.name || '').toLowerCase().includes(lowerQuery);
+                const titleMatch = (person.title || '').toLowerCase().includes(lowerQuery);
+                const emailMatch = (person.email || '').toLowerCase().includes(lowerQuery);
+                const addressMatch = (person.address || '').toLowerCase().includes(lowerQuery);
+                
+                // Phone is array
+                const phoneMatch = (person.phones || []).some(phone => 
+                    phone.toLowerCase().includes(lowerQuery)
+                );
+
+                return nameMatch || titleMatch || emailMatch || addressMatch || phoneMatch;
+            });
+
+            if (matchingPeople.length > 0) {
+                return {
+                    ...companyGroup,
+                    people: matchingPeople
+                };
+            }
+
+            return null;
+        }).filter(group => group !== null);
+
+        this.render(filteredData);
+    },
+
+    render(dataToRender = this.data) {
         // Clear current content except empty state
         // (Actually helper to rebuild list)
-
-        if (this.data.length === 0) {
-            this.dom.emptyState.style.display = 'flex';
+        
+        if (!dataToRender || dataToRender.length === 0) {
+            // Only show empty state if global data is empty (no cards at all)
+            if (this.data.length === 0) {
+                 this.dom.emptyState.style.display = 'flex';
+                 this.dom.emptyState.querySelector('h2').textContent = '尚未加入名片';
+            } else {
+                // Search result is empty
+                 this.dom.emptyState.style.display = 'flex';
+                 this.dom.emptyState.querySelector('h2').textContent = '找不到相符的結果';
+            }
+           
             // Clean up other dynamic elements
             Array.from(this.dom.canvasArea.children).forEach(child => {
                 if (child.id !== 'empty-state') child.remove();
@@ -152,7 +224,7 @@ const App = {
             if (child.id !== 'empty-state') child.remove();
         });
 
-        this.data.forEach(group => {
+        dataToRender.forEach(group => {
             const groupEl = document.createElement('div');
             groupEl.className = 'company-group';
 

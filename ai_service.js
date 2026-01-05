@@ -120,7 +120,8 @@ class AIService {
         // Remove header if present (e.g., "data:image/jpeg;base64,")
         const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, "");
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
+        // Use strict version 002 or 001 to avoid 'not found' errors with aliases
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-002:generateContent?key=${this.apiKey}`;
 
         const payload = {
             contents: [{
