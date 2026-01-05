@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0F172A"/>
+  <rect x="106" y="106" width="300" height="300" rx="40" ry="40" stroke="#38BDF8" stroke-width="20" fill="none"/>
+  <path d="M336 106 V 206" stroke="#38BDF8" stroke-width="20" />
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="200" fill="#38BDF8">BC</text>
+</svg>

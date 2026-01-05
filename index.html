@@ -7,6 +7,15 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Business Card Canvas</title>
     <link rel="stylesheet" href="style.css?v=3">
+
+    <!-- PWA Setup -->
+    <link rel="manifest" href="manifest.json">
+    <!-- iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CardBox">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -122,6 +131,22 @@
             </div>
             <div class="modal-footer">
                 <button id="save-settings" class="primary-btn">儲存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duplicate Review Modal -->
+    <div id="duplicate-modal" class="modal hidden">
+        <div class="modal-content duplicate-content">
+            <div class="modal-header">
+                <h3>發現疑似重複名片</h3>
+            </div>
+            <div class="modal-body duplicate-body" id="duplicate-container">
+                <!-- Dynamic Content Injection -->
+            </div>
+            <div class="modal-footer duplicate-footer">
+                <button id="discard-all-btn" class="secondary-btn">全部捨棄</button>
+                <button id="keep-all-btn" class="primary-btn">全部更新</button>
             </div>
         </div>
     </div>

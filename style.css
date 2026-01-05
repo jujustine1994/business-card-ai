@@ -488,3 +488,119 @@ input[type="checkbox"]:checked+.toggle-switch::after {
         transform: rotate(360deg);
     }
 }
+
+/* Duplicate Modal Styles */
+.duplicate-content {
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.duplicate-body {
+    overflow-y: auto;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.duplicate-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.duplicate-title {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border-color);
+}
+
+.comparison-col {
+    background: var(--card-bg);
+    padding: 1rem;
+}
+
+.col-header {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.col-new .col-header {
+    color: var(--success-color);
+}
+
+.data-row {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.data-label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+}
+
+.data-value {
+    color: var(--text-primary);
+    word-break: break-all;
+}
+
+.duplicate-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--border-color);
+    justify-content: flex-end;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.action-btn-sm {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-keep {
+    background: var(--success-color);
+    color: #0f172a;
+}
+
+.btn-discard {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.duplicate-footer {
+    justify-content: space-between;
+}
