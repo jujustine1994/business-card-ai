@@ -24,6 +24,7 @@ const App = {
             closeModalBtn: document.getElementById('close-modal'),
             saveSettingsBtn: document.getElementById('save-settings'),
             apiKeyInput: document.getElementById('api-key'),
+            modelNameInput: document.getElementById('model-name'),
             demoModeInput: document.getElementById('demo-mode'),
             loadingOverlay: document.getElementById('loading-overlay'),
             // Search elements
@@ -48,9 +49,11 @@ const App = {
 
         this.dom.saveSettingsBtn.addEventListener('click', () => {
             const key = this.dom.apiKeyInput.value.trim();
+            const modelName = this.dom.modelNameInput.value.trim();
             const isDemo = this.dom.demoModeInput.checked;
             
             window.aiService.setApiKey(key);
+            window.aiService.setModelName(modelName);
             window.aiService.setDemoMode(isDemo);
             
             alert('設定已儲存');
@@ -73,6 +76,7 @@ const App = {
 
     loadSettings() {
         this.dom.apiKeyInput.value = window.aiService.apiKey;
+        this.dom.modelNameInput.value = window.aiService.modelName;
         this.dom.demoModeInput.checked = window.aiService.isDemoMode;
     },
 

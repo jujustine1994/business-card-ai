@@ -93,12 +93,20 @@ const MockData = [
 class AIService {
     constructor() {
         this.apiKey = localStorage.getItem('gemini_api_key') || '';
+        this.modelName = localStorage.getItem('gemini_model_name') || 'gemini-2.5-flash';
         this.isDemoMode = localStorage.getItem('is_demo_mode') === 'true';
     }
 
     setApiKey(key) {
         this.apiKey = key;
         localStorage.setItem('gemini_api_key', key);
+    }
+
+    setModelName(name) {
+        // Default to 2.5 flash if empty
+        const cleanName = name.trim() || 'gemini-2.5-flash';
+        this.modelName = cleanName;
+        localStorage.setItem('gemini_model_name', cleanName);
     }
 
     setDemoMode(enabled) {
@@ -121,7 +129,7 @@ class AIService {
         const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, "");
 
         // Use strict version 002 or 001 to avoid 'not found' errors with aliases
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-002:generateContent?key=${this.apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelName}:generateContent?key=${this.apiKey}`;
 
         const payload = {
             contents: [{
