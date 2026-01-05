@@ -35,7 +35,13 @@ const App = {
 
     bindEvents() {
         this.dom.cameraInput.addEventListener('change', (e) => this.handleFileUpload(e));
-        
+
+        // New Gallery Input
+        const galleryInput = document.getElementById('gallery-input');
+        if (galleryInput) {
+            galleryInput.addEventListener('change', (e) => this.handleFileUpload(e));
+        }
+
         // Modal Events
         this.dom.settingsBtn.addEventListener('click', () => {
             this.dom.modal.classList.add('visible');
@@ -51,11 +57,11 @@ const App = {
             const key = this.dom.apiKeyInput.value.trim();
             const modelName = this.dom.modelNameInput.value.trim();
             const isDemo = this.dom.demoModeInput.checked;
-            
+
             window.aiService.setApiKey(key);
             window.aiService.setModelName(modelName);
             window.aiService.setDemoMode(isDemo);
-            
+
             alert('設定已儲存');
             this.dom.modal.classList.remove('visible');
             setTimeout(() => this.dom.modal.classList.add('hidden'), 200);
@@ -167,7 +173,7 @@ const App = {
 
             if (companyMatch) {
                 // If company matches, show all people (or could choose to still filter people, but usually showing all is better context)
-                return companyGroup; 
+                return companyGroup;
             }
 
             // Filter people within the company
@@ -176,9 +182,9 @@ const App = {
                 const titleMatch = (person.title || '').toLowerCase().includes(lowerQuery);
                 const emailMatch = (person.email || '').toLowerCase().includes(lowerQuery);
                 const addressMatch = (person.address || '').toLowerCase().includes(lowerQuery);
-                
+
                 // Phone is array
-                const phoneMatch = (person.phones || []).some(phone => 
+                const phoneMatch = (person.phones || []).some(phone =>
                     phone.toLowerCase().includes(lowerQuery)
                 );
 
@@ -201,18 +207,18 @@ const App = {
     render(dataToRender = this.data) {
         // Clear current content except empty state
         // (Actually helper to rebuild list)
-        
+
         if (!dataToRender || dataToRender.length === 0) {
             // Only show empty state if global data is empty (no cards at all)
             if (this.data.length === 0) {
-                 this.dom.emptyState.style.display = 'flex';
-                 this.dom.emptyState.querySelector('h2').textContent = '尚未加入名片';
+                this.dom.emptyState.style.display = 'flex';
+                this.dom.emptyState.querySelector('h2').textContent = '尚未加入名片';
             } else {
                 // Search result is empty
-                 this.dom.emptyState.style.display = 'flex';
-                 this.dom.emptyState.querySelector('h2').textContent = '找不到相符的結果';
+                this.dom.emptyState.style.display = 'flex';
+                this.dom.emptyState.querySelector('h2').textContent = '找不到相符的結果';
             }
-           
+
             // Clean up other dynamic elements
             Array.from(this.dom.canvasArea.children).forEach(child => {
                 if (child.id !== 'empty-state') child.remove();
