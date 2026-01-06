@@ -207,7 +207,6 @@ class FirebaseService {
     }
 
 }
-}
 
 // Export singleton
 window.FirebaseService = new FirebaseService();
