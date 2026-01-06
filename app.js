@@ -11,8 +11,6 @@ const App = {
         this.cacheDOM();
         this.bindEvents();
         this.loadSettings();
-        this.bindEvents();
-        this.loadSettings();
         this.render();
         this.initFirebase();
     },
