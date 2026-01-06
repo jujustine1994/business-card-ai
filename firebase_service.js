@@ -176,6 +176,9 @@ class FirebaseService {
                 await collectionRef.add(payload);
             }
             console.log("Data saved to cloud (Encrypted)");
+            if (window.App && window.App.showToast) {
+                window.App.showToast('已同步至雲端');
+            }
         } catch (error) {
             console.error("Save error:", error);
             alert("儲存失敗: " + error.message);

@@ -747,9 +747,34 @@ input[type="checkbox"]:checked+.toggle-switch::after {
     transition: all 0.2s;
 }
 
-.edit-icon-btn:hover {
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--surface-light);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--accent-color);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.toast.visible {
+    transform: translateX(-50%) translateY(0);
     opacity: 1;
-    color: var(--accent-color);
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
+}
+
+.toast svg {
+    color: #10b981;
+    /* Success Green */
 }
