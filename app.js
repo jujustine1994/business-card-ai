@@ -142,13 +142,18 @@ class App {
 
         if (this.dom.googleLoginBtn) {
             this.dom.googleLoginBtn.addEventListener('click', async () => {
-                console.log('Google login clicked'); // Debug
                 try {
-                    await window.FirebaseService.signInWithGoogle();
+                    // Ensure init before action
+                    if (!window.FirebaseService.auth) {
+                        window.FirebaseService.init();
+                    }
+                    await window.FirebaseService.loginWithGoogle();
+                    // Close modal handled by auth listener, but we can do it here too for responsiveness
                     this.dom.authModal.classList.remove('visible');
                     this.dom.authModal.classList.add('hidden');
                 } catch (e) {
                     alert("Google Login Error: " + e.message);
+                    console.error(e);
                 }
             });
         }
