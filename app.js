@@ -1,20 +1,27 @@
 /**
  * Main Application Logic
+ * Refactored to Class structure for stability
  */
 
-const App = {
-    // Current state containing all organized cards
-    // Structure: Array of { company: string, people: Array }
-    data: [],
+class App {
+    constructor() {
+        // Current state containing all organized cards
+        // Structure: Array of { company: string, people: Array }
+        this.data = [];
+        this.dom = {};
+        this.currentEditTarget = null;
+        this.currentDuplicates = [];
+        this.toastTimeout = null;
+    }
 
     init() {
         this.cacheDOM();
         this.bindEvents();
         this.loadSettings();
-        this.render();
+        this.render(); // Render local/empty state first
         this.showLoading(false); // Safety ensure hidden
         this.initFirebase();
-    },
+    }
 
     cacheDOM() {
         this.dom = {
@@ -59,7 +66,7 @@ const App = {
             editPhoneInput: document.getElementById('edit-phone'),
             editAddressInput: document.getElementById('edit-address')
         };
-    },
+    }
 
     bindEvents() {
         this.dom.cameraInput.addEventListener('change', (e) => this.handleFileUpload(e));
@@ -103,10 +110,6 @@ const App = {
 
         this.dom.clearSearchBtn.addEventListener('click', () => {
             this.dom.searchInput.value = '';
-            this.handleSearch('');
-            this.dom.searchInput.focus();
-            this.handleSearch('');
-            this.dom.searchInput.focus();
             this.handleSearch('');
             this.dom.searchInput.focus();
         });
@@ -180,19 +183,19 @@ const App = {
         this.dom.closeEditModalBtn.addEventListener('click', () => this.closeEditModal());
         this.dom.saveEditBtn.addEventListener('click', () => this.saveEditCard());
         this.dom.deleteCardBtn.addEventListener('click', () => this.deleteCurrentCard());
-    },
+    }
 
     initFirebase() {
         if (window.FirebaseService) {
             window.FirebaseService.init();
         }
-    },
+    }
 
     loadSettings() {
         this.dom.apiKeyInput.value = window.aiService.apiKey;
         this.dom.modelNameInput.value = window.aiService.modelName;
         this.dom.demoModeInput.checked = window.aiService.isDemoMode;
-    },
+    }
 
     async handleFileUpload(event) {
         const files = event.target.files;
@@ -238,7 +241,7 @@ const App = {
         } finally {
             this.showLoading(false);
         }
-    },
+    }
 
     readFileAsBase64(file) {
         return new Promise((resolve, reject) => {
@@ -247,7 +250,7 @@ const App = {
             reader.onerror = reject;
             reader.readAsDataURL(file);
         });
-    },
+    }
 
     identifyDuplicates(newResults) {
         const cleanData = [];
@@ -288,7 +291,7 @@ const App = {
         });
 
         return { cleanData, duplicates };
-    },
+    }
 
     renderDuplicatesModal(duplicates) {
         this.dom.duplicateContainer.innerHTML = '';
@@ -309,8 +312,8 @@ const App = {
                     </div>
                 </div>
                 <div class="duplicate-actions">
-                    <button class="action-btn-sm btn-discard" onclick="App.resolveSingleDuplicate(${index}, 'discard')">捨棄 (Keep Old)</button>
-                    <button class="action-btn-sm btn-keep" onclick="App.resolveSingleDuplicate(${index}, 'keep')">更新 (Update)</button>
+                    <button class="action-btn-sm btn-discard" onclick="window.App.resolveSingleDuplicate(${index}, 'discard')">捨棄 (Keep Old)</button>
+                    <button class="action-btn-sm btn-keep" onclick="window.App.resolveSingleDuplicate(${index}, 'keep')">更新 (Update)</button>
                 </div>
             `;
             this.dom.duplicateContainer.appendChild(el);
@@ -318,7 +321,7 @@ const App = {
 
         this.dom.duplicateModal.classList.remove('hidden');
         this.dom.duplicateModal.classList.add('visible');
-    },
+    }
 
     renderPersonDetails(person) {
         return `
@@ -339,27 +342,13 @@ const App = {
                 <div class="data-value">${person.address || '-'}</div>
             </div>
         `;
-    },
+    }
 
     resolveSingleDuplicate(index, action) {
         const dup = this.currentDuplicates[index];
         if (!dup) return;
 
         if (action === 'keep') {
-            // Updated to explicitly call save for Cloud
-            // In Cloud-First, mergeData is mostly for local state until sync happens, 
-            // but effectively we need to push to cloud.
-
-            // Reconstruct full group for saving
-            const groupToSave = dup.newGroupRaw;
-            // IMPORTANT: newGroupRaw in identifyDuplicates needs to be passed correctly.
-            // dup.new is just the person. 
-            // We need to save the whole group structure or update the specific person in the group.
-
-            // Simplified approach for now:
-            // 1. Update local data
-            // 2. Call Save
-
             this.mergeAndSave(dup.companyName, dup.new);
         }
         // If discard, do nothing
@@ -376,7 +365,7 @@ const App = {
             const items = this.dom.duplicateContainer.children;
             if (items[index]) items[index].style.display = 'none';
         }
-    },
+    }
 
     resolveAllDuplicates(action) {
         if (action === 'keep') {
@@ -385,7 +374,7 @@ const App = {
             });
         }
         this.closeDuplicateModal();
-    },
+    }
 
     closeDuplicateModal() {
         this.dom.duplicateModal.classList.remove('visible');
@@ -395,7 +384,7 @@ const App = {
             this.dom.cameraInput.value = '';
         }, 200);
         this.currentDuplicates = [];
-    },
+    }
 
     // --- Edit Feature Logic ---
 
@@ -416,13 +405,13 @@ const App = {
 
         this.dom.editModal.classList.remove('hidden');
         this.dom.editModal.classList.add('visible');
-    },
+    }
 
     closeEditModal() {
         this.dom.editModal.classList.remove('visible');
         setTimeout(() => this.dom.editModal.classList.add('hidden'), 200);
         this.currentEditTarget = null;
-    },
+    }
 
     async saveEditCard() {
         if (!this.currentEditTarget) return;
@@ -462,14 +451,14 @@ const App = {
             }
 
             this.closeEditModal();
-            // Render will happen via sync listener or we can force it if offline
+            // Render will happen via sync listener
         } catch (e) {
             alert('儲存失敗: ' + e.message);
             console.error(e);
         } finally {
             this.showLoading(false);
         }
-    },
+    }
 
     async deleteCurrentCard() {
         if (!this.currentEditTarget) return;
@@ -486,7 +475,7 @@ const App = {
         } finally {
             this.showLoading(false);
         }
-    },
+    }
 
     async removePersonFromGroup(companyName, personIndex) {
         const group = this.data.find(g => g.company === companyName);
@@ -497,7 +486,6 @@ const App = {
 
         if (group.people.length === 0) {
             // If group empty, delete updated group doc
-            // wait... if we delete it from array, we should delete doc from cloud
             await window.FirebaseService.deleteGroup(group.id);
             // Also remove from local data to maintain consistency until sync
             const idx = this.data.findIndex(g => g.company === companyName);
@@ -506,7 +494,7 @@ const App = {
             // Update group with remaining people
             await window.FirebaseService.saveCardGroup(group);
         }
-    },
+    }
 
     /**
      * Merge new results into existing data (Rule A, B, C)
@@ -550,9 +538,7 @@ const App = {
                 await window.FirebaseService.saveCardGroup(newGroup);
             }
         }
-        // No need to call render() here because syncData() listener will trigger render() 
-        // when Cloud Firestore updates. But for UX immediacy we *could*, but strictly Cloud-First relies on the listener.
-    },
+    }
 
     // Helper to merge single person and save
     async mergeAndSave(companyName, newPerson) {
@@ -565,11 +551,10 @@ const App = {
             existingGroup.people = people;
             await window.FirebaseService.saveCardGroup(existingGroup);
         } else {
-            // Should not happen in duplicate logic but useful for generic
             const newGroup = { company: companyName, people: [newPerson] };
             await window.FirebaseService.saveCardGroup(newGroup);
         }
-    },
+    }
 
     showLoading(show) {
         if (show) {
@@ -577,7 +562,7 @@ const App = {
         } else {
             this.dom.loadingOverlay.classList.add('hidden');
         }
-    },
+    }
 
     handleSearch(query) {
         if (!query) {
@@ -595,7 +580,6 @@ const App = {
             const companyMatch = (companyGroup.company || '').toLowerCase().includes(lowerQuery);
 
             if (companyMatch) {
-                // If company matches, show all people (or could choose to still filter people, but usually showing all is better context)
                 return companyGroup;
             }
 
@@ -625,12 +609,10 @@ const App = {
         }).filter(group => group !== null);
 
         this.render(filteredData);
-    },
+    }
 
     render(dataToRender = this.data) {
         // Clear current content except empty state
-        // (Actually helper to rebuild list)
-
         if (!dataToRender || dataToRender.length === 0) {
             // Only show empty state if global data is empty (no cards at all)
             if (this.data.length === 0) {
@@ -725,8 +707,6 @@ const App = {
                 const editBtn = personEl.querySelector('.edit-icon-btn');
                 editBtn.addEventListener('click', (e) => {
                     e.stopPropagation(); // prevent other clicks
-                    // Find current indices in the filtered data source or original source?
-                    // We must find the person in THIS specific rendered instance
                     const pIndex = group.people.indexOf(person);
                     // Find group index in main data (crucial for logic)
                     const gIndex = this.data.findIndex(g => g.company === group.company);
@@ -739,7 +719,7 @@ const App = {
 
             this.dom.canvasArea.appendChild(groupEl);
         });
-    },
+    }
 
     showToast(message, type = 'success') {
         let toast = document.getElementById('toast-notification');
@@ -766,10 +746,12 @@ const App = {
             toast.classList.remove('visible');
         }, 3000);
     }
-};
+}
 
-window.App = App;
+// Instantiate and expose globally
+const app = new App();
+window.App = app;
 
 document.addEventListener('DOMContentLoaded', () => {
-    App.init();
+    app.init();
 });
