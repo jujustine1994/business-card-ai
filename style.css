@@ -600,283 +600,366 @@ body {
         border: 1px solid var(--border-color);
         color: var(--text-secondary);
         padding: 0.5rem 1rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-    }
-
-    .action-btn-sm {
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 0.9rem;
-    }
-
-    .btn-keep {
-        background: var(--success-color);
-        color: #0f172a;
-    }
-
-    .btn-discard {
-        background: rgba(239, 68, 68, 0.2);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-
-    /* Auth UI Styles */
-    #auth-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: 2px solid var(--accent-color);
-        object-fit: cover;
-    }
-
-    .small-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.95rem;
-        white-space: nowrap;
-        min-width: 80px;
-    }
-
-    .google-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        background: white;
-        color: #444;
-        border: 1px solid #ddd;
         border-radius: 8px;
-        padding: 0.75rem;
-        font-size: 1rem;
-        font-weight: 500;
         cursor: pointer;
-        transition: background 0.2s;
-        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
     }
 
-    .logo {
-        font-size: 1.25rem;
+    /* --- Business Card Grid --- */
+    .company-group {
+        margin-bottom: 2rem;
+    }
+
+    .company-header {
+        font-size: 1.1rem;
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        padding-left: 0.5rem;
+        border-left: 3px solid var(--accent-color);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .business-card {
+        background: rgba(30, 41, 59, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.25rem;
+        position: relative;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+    }
+
+    .business-card:hover {
+        transform: translateY(-2px);
+        background: rgba(30, 41, 59, 0.6);
+        border-color: var(--accent-color);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-name {
+        font-size: 1.2rem;
         font-weight: 700;
         color: var(--text-primary);
-        letter-spacing: -0.5px;
+        margin-bottom: 0.25rem;
     }
 
-    .highlight-char {
-        color: #A1A1AA;
-        /* Zinc 400 - Silvery Grey */
-        text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
-    }
-
-    .google-btn:hover {
-        background: #f8f9fa;
-    }
-
-    .divider {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-        margin: 1.5rem 0;
-    }
-
-    .divider::before,
-    .divider::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .divider::before {
-        margin-right: .5em;
-    }
-
-    .divider::after {
-        margin-left: .5em;
-    }
-
-    .auth-input {
-        width: 100%;
-        padding: 0.75rem;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .auth-actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-
-    .auth-actions button {
-        flex: 1;
-        padding: 0.75rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    /* Edit Button Styles */
-    .card-edit-btn-wrapper {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-
-    .edit-icon-btn {
-        opacity: 0.5;
-        padding: 4px;
-        color: var(--text-secondary);
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    /* Toast Notification */
-    .toast {
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--surface-light);
-        color: var(--text-primary);
-        padding: 12px 24px;
-        border-radius: 50px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--accent-color);
+    .card-title {
         font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        z-index: 2000;
-        pointer-events: none;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        font-weight: 500;
     }
 
-    .toast.visible {
-        transform: translateX(-50%) translateY(0);
+    .card-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        opacity: 0.9;
+    }
+
+    .card-edit-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: var(--text-secondary);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .business-card:hover .card-edit-indicator {
         opacity: 1;
     }
 
-    .toast svg {
-        color: #10b981;
-        /* Success Green */
-    }
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
 
-    /* --- FIXED AUTH & FORM STYLES --- */
-    .auth-form,
-    .modal-body {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-    }
+.action-btn-sm {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-bottom: 0px;
-        /* Reset */
-    }
+.btn-keep {
+    background: var(--success-color);
+    color: #0f172a;
+}
 
-    .form-group label {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        font-weight: 500;
-    }
+.btn-discard {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
 
-    .form-group input,
-    .form-group textarea {
-        width: 100%;
-        padding: 0.85rem 1rem;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 1rem;
-        transition: all 0.2s ease;
-        outline: none;
-    }
 
-    .form-group input:focus,
-    .form-group textarea:focus {
-        border-color: var(--accent-color);
-        background: rgba(56, 189, 248, 0.05);
-        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
-    }
+/* Auth UI Styles */
+#auth-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-    .modal-content.auth-content {
-        max-width: 420px;
-        text-align: center;
-    }
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-color);
+    object-fit: cover;
+}
 
-    .google-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        background: white;
-        color: #1a1a1a;
-        border: none;
-        padding: 0.85rem;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.1s;
-        margin-bottom: 0px;
-    }
+.small-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    min-width: 80px;
+}
 
-    .divider {
-        display: flex;
-        align-items: center;
-        color: var(--text-secondary);
-        font-size: 0.85rem;
-        margin: 1.5rem 0;
-    }
+.google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: white;
+    color: #444;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 1.5rem;
+}
 
-    .divider::before,
-    .divider::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: var(--border-color);
-    }
+.logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
 
-    .divider::before {
-        margin-right: 1rem;
-    }
+.highlight-char {
+    color: #A1A1AA;
+    /* Zinc 400 - Silvery Grey */
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
+}
 
-    .divider::after {
-        margin-left: 1rem;
-    }
+.google-btn:hover {
+    background: #f8f9fa;
+}
 
-    /* Fix Modal Content Padding */
-    .modal-body {
-        padding: 1.5rem;
-    }
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+}
 
-    .modal-footer {
-        gap: 1rem;
-        /* Ensure gap between delete and save */
-    }
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.divider::before {
+    margin-right: .5em;
+}
+
+.divider::after {
+    margin-left: .5em;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+
+.auth-actions button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Edit Button Styles */
+.card-edit-btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.edit-icon-btn {
+    opacity: 0.5;
+    padding: 4px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--surface-light);
+    color: var(--text-primary);
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--accent-color);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 2000;
+    pointer-events: none;
+}
+
+.toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast svg {
+    color: #10b981;
+    /* Success Green */
+}
+
+/* --- FIXED AUTH & FORM STYLES --- */
+.auth-form,
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0px;
+    /* Reset */
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent-color);
+    background: rgba(56, 189, 248, 0.05);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.modal-content.auth-content {
+    max-width: 420px;
+    text-align: center;
+}
+
+.google-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: white;
+    color: #1a1a1a;
+    border: none;
+    padding: 0.85rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+    margin-bottom: 0px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.divider::before {
+    margin-right: 1rem;
+}
+
+.divider::after {
+    margin-left: 1rem;
+}
+
+/* Fix Modal Content Padding */
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    gap: 1rem;
+    /* Ensure gap between delete and save */
+}

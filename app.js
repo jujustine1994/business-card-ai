@@ -272,12 +272,18 @@ class App {
                 cardEl.onclick = () => this.editManager.openEditModal(person, group, gIndex, pIndex);
 
                 cardEl.innerHTML = `
+                    <div class="card-edit-indicator">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </div>
                     <div class="card-name">${person.name || '未命名'}</div>
                     <div class="card-title">${person.title || ''}</div>
                     <div class="card-details">
                         ${person.email ? `<div>📧 ${person.email}</div>` : ''}
                         ${(person.phones && person.phones.length > 0) ? `<div>📞 ${person.phones[0]}</div>` : ''}
-                        ${person.note ? `<div style="margin-top:4px; color: var(--accent-color); font-size: 0.8rem;">📝 ${person.note}</div>` : ''}
+                        ${person.note ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1); color: var(--accent-color); font-size: 0.85rem;">📝 ${person.note}</div>` : ''}
                     </div>
                 `;
                 gridEl.appendChild(cardEl);
