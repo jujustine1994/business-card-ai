@@ -128,9 +128,14 @@ const App = {
 
         if (this.dom.googleLoginBtn) {
             this.dom.googleLoginBtn.addEventListener('click', async () => {
-                await window.FirebaseService.signInWithGoogle();
-                this.dom.authModal.classList.remove('visible');
-                this.dom.authModal.classList.add('hidden');
+                console.log('Google login clicked'); // Debug
+                try {
+                    await window.FirebaseService.signInWithGoogle();
+                    this.dom.authModal.classList.remove('visible');
+                    this.dom.authModal.classList.add('hidden');
+                } catch (e) {
+                    alert("Google Login Error: " + e.message);
+                }
             });
         }
 
