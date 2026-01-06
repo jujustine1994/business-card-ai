@@ -162,16 +162,18 @@
             <div class="modal-body duplicate-body" id="duplicate-container">
                 <!-- Dynamic Content Injection -->
             </div>
-            <div class="modal-footer duplicate-footer">
-                <div class="batch-actions">
-                    <button id="discard-all-btn" class="secondary-btn">全部不更新</button>
-                    <button id="keep-all-btn" class="secondary-btn">全部更新</button>
+            <div class="modal-footer duplicate-footer"
+                style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="batch-actions" style="display: flex; gap: 8px;">
+                    <button id="discard-all-btn" class="secondary-btn"
+                        style="font-size: 0.9rem; padding: 6px 12px;">全部不更新</button>
+                    <button id="keep-all-btn" class="secondary-btn"
+                        style="font-size: 0.9rem; padding: 6px 12px;">全部更新</button>
                 </div>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <div style="display: flex; gap: 10px;">
                     <button id="cancel-dups-btn" class="secondary-btn"
-                        style="flex: 1; border: 1px solid #ef4444; color: #ef4444;">不儲存離開</button>
-                    <button id="save-dups-btn" class="primary-btn"
-                        style="flex: 2; background: #10b981;">確認並儲存變更</button>
+                        style="border: 1px solid #ef4444; color: #ef4444;">不儲存離開</button>
+                    <button id="save-dups-btn" class="primary-btn" style="background: #10b981;">確認並儲存變更</button>
                 </div>
             </div>
         </div>
