@@ -302,41 +302,49 @@ class App {
     }
 
     scanForDuplicates() {
-        // Manually check all data for duplicates
+        // Global Check across ALL groups
         const duplicates = [];
+        const allPeopleMap = {};
 
+        // 1. Flatten and Index everyone by Name
         this.data.forEach(group => {
-            // 1. Check duplicates within the same company
-            const seenNames = {};
             group.people.forEach(person => {
                 const lowerName = (person.name || '').trim().toLowerCase();
                 if (!lowerName) return;
 
-                if (!seenNames[lowerName]) {
-                    seenNames[lowerName] = [person];
-                } else {
-                    seenNames[lowerName].push(person);
+                if (!allPeopleMap[lowerName]) {
+                    allPeopleMap[lowerName] = [];
                 }
-            });
 
-            // Process duplications
-            Object.keys(seenNames).forEach(name => {
-                const persons = seenNames[name];
-                if (persons.length > 1) {
-                    // Found duplicates inside ONE company
-                    // We take the first one as "Keeping" (or existing) and others as "New" to be merged
-                    for (let i = 1; i < persons.length; i++) {
-                        duplicates.push({
-                            companyName: group.company,
-                            existing: persons[0], // Base
-                            new: persons[i], // Candidate to merge
-                            newGroupRaw: { company: group.company, people: [persons[i]] }, // Mock structure for merge function
-                            isInternal: true, // Flag for specific handling logic if needed
-                            groupRef: group
-                        });
-                    }
-                }
+                allPeopleMap[lowerName].push({
+                    person: person,
+                    group: group
+                });
             });
+        });
+
+        // 2. Identify Names with > 1 entry
+        Object.keys(allPeopleMap).forEach(name => {
+            const entries = allPeopleMap[name];
+            if (entries.length > 1) {
+                // We have duplicates.
+                const anchor = entries[0];
+
+                for (let i = 1; i < entries.length; i++) {
+                    const candidate = entries[i];
+                    duplicates.push({
+                        companyName: anchor.group.company,
+                        existing: anchor.person,
+                        existingGroup: anchor.group,
+
+                        new: candidate.person,
+                        newGroup: candidate.group,
+
+                        displayCompanyNameA: anchor.group.company,
+                        displayCompanyNameB: candidate.group.company
+                    });
+                }
+            }
         });
 
         if (duplicates.length > 0) {
@@ -354,21 +362,33 @@ class App {
         duplicates.forEach((dup, index) => {
             const el = document.createElement('div');
             el.className = 'duplicate-item';
+
+            let titleHtml = `<div class="duplicate-title">${dup.existing.name}</div>`;
+            if (dup.displayCompanyNameA !== dup.displayCompanyNameB) {
+                titleHtml += `<div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
+                    ${dup.displayCompanyNameA} <br> vs <br> ${dup.displayCompanyNameB}
+                </div>`;
+            } else {
+                titleHtml += `<div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">
+                    ${dup.displayCompanyNameA}
+                </div>`;
+            }
+
             el.innerHTML = `
-                <div class="duplicate-title">${dup.companyName} - ${dup.existing.name}</div>
+                ${titleHtml}
                 <div class="comparison-grid">
                     <div class="comparison-col">
-                        <div class="col-header">現有資料 (Existing)</div>
+                        <div class="col-header">保留項目 (Keep)</div>
                         ${this.renderPersonDetails(dup.existing)}
                     </div>
                     <div class="comparison-col col-new">
-                        <div class="col-header">新掃描資料 (New)</div>
+                        <div class="col-header">捨棄/合併項目 (Drop)</div>
                         ${this.renderPersonDetails(dup.new)}
                     </div>
                 </div>
                 <div class="duplicate-actions">
-                    <button class="action-btn-sm btn-discard" onclick="window.App.resolveSingleDuplicate(${index}, 'discard')">捨棄 (Keep Old)</button>
-                    <button class="action-btn-sm btn-keep" onclick="window.App.resolveSingleDuplicate(${index}, 'keep')">更新 (Update)</button>
+                    <button class="action-btn-sm btn-discard" onclick="window.App.resolveSingleDuplicate(${index}, 'discard')">直接刪除 (Delete)</button>
+                    <button class="action-btn-sm btn-keep" onclick="window.App.resolveSingleDuplicate(${index}, 'keep')">合併並保留左側 (Merge to Left)</button>
                 </div>
             `;
             this.dom.duplicateContainer.appendChild(el);
@@ -586,8 +606,10 @@ class App {
 
         // Use a loop to handle async saves
         for (const newGroup of newResults) {
-            // Find existing company group
-            const existingGroup = this.data.find(g => g.company === newGroup.company);
+            // Find existing company group (Case Insensitive Match)
+            const existingGroup = this.data.find(g =>
+                (g.company || '').trim().toLowerCase() === (newGroup.company || '').trim().toLowerCase()
+            );
 
             if (existingGroup) {
                 // Merge people into existing company logic
@@ -596,8 +618,9 @@ class App {
 
                 newGroup.people.forEach(newPerson => {
                     const existingPersonIndex = people.findIndex(
-                        p => p.name === newPerson.name
+                        p => (p.name || '').toLowerCase() === (newPerson.name || '').toLowerCase()
                     );
+
 
                     if (existingPersonIndex !== -1) {
                         people[existingPersonIndex] = newPerson;
