@@ -718,10 +718,35 @@ input[type="checkbox"]:checked+.toggle-switch::after {
     margin-top: 1rem;
 }
 
+
 .auth-actions button {
     flex: 1;
     padding: 0.75rem;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
+}
+
+/* Edit Button Styles */
+.card-edit-btn-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.edit-icon-btn {
+    opacity: 0.5;
+    padding: 4px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.edit-icon-btn:hover {
+    opacity: 1;
+    color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
 }

@@ -44,7 +44,19 @@ const App = {
             keepAllBtn: document.getElementById('keep-all-btn'),
             // Search elements
             searchInput: document.getElementById('search-input'),
-            clearSearchBtn: document.getElementById('clear-search')
+            clearSearchBtn: document.getElementById('clear-search'),
+            // Edit Modal
+            editModal: document.getElementById('edit-modal'),
+            closeEditModalBtn: document.getElementById('close-edit-modal'),
+            saveEditBtn: document.getElementById('save-edit-btn'),
+            deleteCardBtn: document.getElementById('delete-card-btn'),
+            // Edit Inputs
+            editCompanyInput: document.getElementById('edit-company'),
+            editNameInput: document.getElementById('edit-name'),
+            editTitleInput: document.getElementById('edit-title'),
+            editEmailInput: document.getElementById('edit-email'),
+            editPhoneInput: document.getElementById('edit-phone'),
+            editAddressInput: document.getElementById('edit-address')
         };
     },
 
@@ -157,6 +169,11 @@ const App = {
         // Duplicate Modal Events
         this.dom.discardAllBtn.addEventListener('click', () => this.resolveAllDuplicates('discard'));
         this.dom.keepAllBtn.addEventListener('click', () => this.resolveAllDuplicates('keep'));
+
+        // Edit Modal Events
+        this.dom.closeEditModalBtn.addEventListener('click', () => this.closeEditModal());
+        this.dom.saveEditBtn.addEventListener('click', () => this.saveEditCard());
+        this.dom.deleteCardBtn.addEventListener('click', () => this.deleteCurrentCard());
     },
 
     initFirebase() {
@@ -374,6 +391,117 @@ const App = {
         this.currentDuplicates = [];
     },
 
+    // --- Edit Feature Logic ---
+
+    openEditModal(person, companyGroup, groupIndex, personIndex) {
+        this.currentEditTarget = {
+            groupIndex,
+            personIndex,
+            originalCompany: companyGroup.company
+        };
+
+        // Fill inputs
+        this.dom.editCompanyInput.value = companyGroup.company || '';
+        this.dom.editNameInput.value = person.name || '';
+        this.dom.editTitleInput.value = person.title || '';
+        this.dom.editEmailInput.value = person.email || '';
+        this.dom.editPhoneInput.value = (person.phones || []).join(', ');
+        this.dom.editAddressInput.value = person.address || '';
+
+        this.dom.editModal.classList.remove('hidden');
+        this.dom.editModal.classList.add('visible');
+    },
+
+    closeEditModal() {
+        this.dom.editModal.classList.remove('visible');
+        setTimeout(() => this.dom.editModal.classList.add('hidden'), 200);
+        this.currentEditTarget = null;
+    },
+
+    async saveEditCard() {
+        if (!this.currentEditTarget) return;
+
+        const { groupIndex, personIndex, originalCompany } = this.currentEditTarget;
+
+        // 1. Construct new person object
+        const newPerson = {
+            name: this.dom.editNameInput.value.trim(),
+            title: this.dom.editTitleInput.value.trim(),
+            email: this.dom.editEmailInput.value.trim(),
+            phones: this.dom.editPhoneInput.value.split(/[,，]/).map(p => p.trim()).filter(p => p),
+            address: this.dom.editAddressInput.value.trim()
+        };
+
+        const newCompanyName = this.dom.editCompanyInput.value.trim();
+
+        this.showLoading(true);
+        try {
+            // Logic differs if company name changed
+            if (newCompanyName !== originalCompany) {
+                // Move logic: Delete from old group, Add to new/existing group
+
+                // Remove from old
+                await this.removePersonFromGroup(originalCompany, personIndex);
+
+                // Add to new
+                await this.mergeAndSave(newCompanyName, newPerson);
+            } else {
+                // Same company, just update person
+                // Find group by searching data or assume index is stable (safer to find by company name)
+                const group = this.data.find(g => g.company === originalCompany);
+                if (group) {
+                    group.people[personIndex] = newPerson;
+                    await window.FirebaseService.saveCardGroup(group);
+                }
+            }
+
+            this.closeEditModal();
+            // Render will happen via sync listener or we can force it if offline
+        } catch (e) {
+            alert('儲存失敗: ' + e.message);
+            console.error(e);
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    async deleteCurrentCard() {
+        if (!this.currentEditTarget) return;
+        if (!confirm('確定要刪除這張名片嗎？')) return;
+
+        const { personIndex, originalCompany } = this.currentEditTarget;
+
+        this.showLoading(true);
+        try {
+            await this.removePersonFromGroup(originalCompany, personIndex);
+            this.closeEditModal();
+        } catch (e) {
+            alert('刪除失敗: ' + e.message);
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    async removePersonFromGroup(companyName, personIndex) {
+        const group = this.data.find(g => g.company === companyName);
+        if (!group) return;
+
+        // Remove person locally
+        group.people.splice(personIndex, 1);
+
+        if (group.people.length === 0) {
+            // If group empty, delete updated group doc
+            // wait... if we delete it from array, we should delete doc from cloud
+            await window.FirebaseService.deleteGroup(group.id);
+            // Also remove from local data to maintain consistency until sync
+            const idx = this.data.findIndex(g => g.company === companyName);
+            if (idx !== -1) this.data.splice(idx, 1);
+        } else {
+            // Update group with remaining people
+            await window.FirebaseService.saveCardGroup(group);
+        }
+    },
+
     /**
      * Merge new results into existing data (Rule A, B, C)
      * AND Save to Cloud
@@ -554,7 +682,16 @@ const App = {
                 }
 
                 personEl.innerHTML = `
-                    <div class="person-name">${person.name || 'Unknown Name'}</div>
+                personEl.innerHTML = `
+                    < div class="card-edit-btn-wrapper" >
+                         <div class="person-name">${person.name || 'Unknown Name'}</div>
+                         <button class="icon-btn edit-icon-btn" aria-label="編輯">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                         </button>
+                    </div >
                     <div class="person-title">${person.title || ''}</div>
                     <ul class="contact-list">
                         ${phoneHtml}
@@ -577,7 +714,21 @@ const App = {
                         </li>
                         ` : ''}
                     </ul>
-                `;
+`;
+                
+                // Add click listener to edit button
+                const editBtn = personEl.querySelector('.edit-icon-btn');
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // prevent other clicks
+                    // Find current indices in the filtered data source or original source?
+                    // We must find the person in THIS specific rendered instance
+                    const pIndex = group.people.indexOf(person);
+                    // Find group index in main data (crucial for logic)
+                    const gIndex = this.data.findIndex(g => g.company === group.company);
+                    
+                    this.openEditModal(person, group, gIndex, pIndex);
+                });
+
                 groupEl.appendChild(personEl);
             });
 

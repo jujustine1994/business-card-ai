@@ -13,7 +13,7 @@
     <!-- iOS Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CardBox">
+    <meta name="apple-mobile-web-app-title" content="B.B.C">
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -200,6 +200,47 @@
         </div>
     </div>
 
+    <!-- Edit Card Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>編輯名片</h3>
+                <button id="close-edit-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="edit-company">公司名稱</label>
+                    <input type="text" id="edit-company" class="auth-input">
+                </div>
+                <div class="input-group">
+                    <label for="edit-name">姓名</label>
+                    <input type="text" id="edit-name" class="auth-input">
+                </div>
+                <div class="input-group">
+                    <label for="edit-title">職稱</label>
+                    <input type="text" id="edit-title" class="auth-input">
+                </div>
+                <div class="input-group">
+                    <label for="edit-email">Email</label>
+                    <input type="email" id="edit-email" class="auth-input">
+                </div>
+                <div class="input-group">
+                    <label for="edit-phone">電話 (多組請用逗號分隔)</label>
+                    <input type="text" id="edit-phone" class="auth-input">
+                </div>
+                <div class="input-group">
+                    <label for="edit-address">地址</label>
+                    <input type="text" id="edit-address" class="auth-input">
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button id="delete-card-btn" class="secondary-btn"
+                    style="color: #ef4444; border-color: rgba(239,68,68,0.3);">刪除名片</button>
+                <button id="save-edit-btn" class="primary-btn">儲存變更</button>
+            </div>
+        </div>
+    </div>
+
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="spinner"></div>
         <p>AI 正在辨識與整理中...</p>
@@ -211,12 +252,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <!-- Config & Service -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="firebase_config.js"></script>
     <script src="firebase_service.js"></script>
 
     <!-- Add version cache busting -->
-    <script src="ai_service.js?v=4"></script>
-    <script src="app.js?v=4"></script>
+    <script src="ai_service.js?v=5"></script>
+    <script src="app.js?v=5"></script>
 </body>
 
 </html>

@@ -109,10 +109,27 @@ class FirebaseService {
         this.unsubscribeSnapshot = collectionRef.onSnapshot((snapshot) => {
             const data = [];
             snapshot.forEach((doc) => {
-                data.push({
-                    id: doc.id, // Firestore Doc ID
-                    ...doc.data()
-                });
+                const docData = doc.data();
+                let finalData = null;
+
+                // Decryption Logic
+                if (docData.ciphertext) {
+                    // Encrypted Data
+                    try {
+                        const decrypted = this.decrypt(docData.ciphertext);
+                        finalData = { ...decrypted, id: doc.id };
+                    } catch (e) {
+                        console.error("Decryption failed for doc:", doc.id, e);
+                        // Fallback: maybe key changed or corrupted? 
+                        // We can't do much but maybe skip or show error placeholder
+                        finalData = { company: "Error: Decryption Failed", people: [], id: doc.id };
+                    }
+                } else {
+                    // Legacy (Plaintext) Data
+                    finalData = { id: doc.id, ...docData };
+                }
+
+                if (finalData) data.push(finalData);
             });
 
             // Update App Data
@@ -137,22 +154,28 @@ class FirebaseService {
 
         const collectionRef = this.db.collection('users').doc(this.user.uid).collection('cards');
 
+        // Encryption
+        // We strip the 'id' before encrypting to avoid redundancy, 
+        // though keeping it in the payload is also fine.
+        // Let's keep specific fields to ensure clean data.
+        const dataToEncrypt = {
+            company: companyGroup.company,
+            people: companyGroup.people,
+            updatedAt: new Date().toISOString()
+        };
+
+        const ciphertext = this.encrypt(dataToEncrypt);
+        const payload = { ciphertext: ciphertext };
+
         try {
             if (companyGroup.id) {
                 // Update existing
-                await collectionRef.doc(companyGroup.id).set(companyGroup, { merge: true });
+                await collectionRef.doc(companyGroup.id).set(payload, { merge: true });
             } else {
                 // Create new
-                // Check if company already exists (Client side check is fast, but Cloud check is safer)
-                // Here we just add, but in App.js we usually handle merging before calling save.
-                // Or we can query by company name here.
-
-                // Strategy: We rely on App.js passing us a "Merged" specific group.
-                // Ideally, App.js should know the ID if it came from syncData.
-
-                await collectionRef.add(companyGroup);
+                await collectionRef.add(payload);
             }
-            console.log("Data saved to cloud");
+            console.log("Data saved to cloud (Encrypted)");
         } catch (error) {
             console.error("Save error:", error);
             alert("儲存失敗: " + error.message);
@@ -166,7 +189,22 @@ class FirebaseService {
         if (!this.user) return;
         await this.db.collection('users').doc(this.user.uid).collection('cards').doc(groupId).delete();
     }
-}
+
+    // --- Encryption Helpers ---
+
+    encrypt(dataObj) {
+        if (!window.CryptoJS) return JSON.stringify(dataObj); // Fallback if lib missing
+        const jsonStr = JSON.stringify(dataObj);
+        // Use User UID as the key
+        return CryptoJS.AES.encrypt(jsonStr, this.user.uid).toString();
+    }
+
+    decrypt(ciphertext) {
+        if (!window.CryptoJS) return null;
+        const bytes = CryptoJS.AES.decrypt(ciphertext, this.user.uid);
+        const decryptedStr = bytes.toString(CryptoJS.enc.Utf8);
+        return JSON.parse(decryptedStr);
+    }
 
 // Export singleton
 window.FirebaseService = new FirebaseService();
