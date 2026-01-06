@@ -172,7 +172,15 @@
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal hidden" style="z-index: 2000;">
-        <div class="modal-content auth-content">
+        <div class="modal-content auth-content" style="position: relative;">
+            <button class="icon-btn close-modal-btn"
+                onclick="document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('auth-modal').classList.remove('visible');"
+                style="position: absolute; top: 16px; right: 16px; z-index: 10;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+            </button>
+
             <h2>登入 / 註冊</h2>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">登入以同步您的名片資料</p>
 
@@ -210,22 +218,15 @@
                     <button id="email-register-btn" class="secondary-btn">註冊新帳號</button>
                 </div>
             </div>
-
-            <button class="icon-btn close-modal-btn"
-                onclick="document.getElementById('auth-modal').classList.add('hidden'); document.getElementById('auth-modal').classList.remove('visible');">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg>
-            </button>
         </div>
     </div>
 
     <!-- Edit Card Modal -->
-    <div id="edit-modal" class="modal hidden">
-        <div class="modal-content">
+    <div id="edit-modal" class="modal hidden" style="z-index: 2000;">
+        <div class="modal-content" style="position: relative;">
             <div class="modal-header">
                 <h3>編輯名片</h3>
-                <button id="close-edit-modal-btn" class="icon-btn">
+                <button id="close-edit-modal-btn" class="icon-btn close-btn">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"></path>
                     </svg>
@@ -264,14 +265,12 @@
 
                 <div class="form-group">
                     <label>備註</label>
-                    <textarea id="edit-note" rows="3" placeholder="輸入備註事項..."
-                        style="width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; font-size: 1rem; resize: vertical;"></textarea>
+                    <textarea id="edit-note" rows="3" placeholder="輸入備註事項..." style="resize: vertical;"></textarea>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button id="delete-card-btn" class="secondary-btn"
-                    style="color: #ef4444; border-color: #ef4444;">刪除名片</button>
+                    style="border-color: #ef4444; color: #ef4444; margin-right: auto;">刪除名片</button>
                 <button id="save-edit-btn" class="primary-btn">儲存變更</button>
             </div>
         </div>
@@ -283,18 +282,33 @@
     </div>
 
     <!-- Firebase SDKs (Compat version for easier html usage) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <!-- Config & Service -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="firebase_config.js?v=5"></script>
-    <script src="firebase_service.js?v=5"></script>
+    <script src="firebase_config.js"></script>
+    <script src="firebase_service.js"></script>
 
     <!-- Add version cache busting -->
-    <script src="ai_service.js?v=5"></script>
-    <script src="app.js?v=5"></script>
+    <script src="ai_service.js"></script>
+
+    <!-- Managers -->
+    <script src="js/auth_manager.js"></script>
+    <script src="js/scan_manager.js"></script>
+    <script src="js/duplicate_manager.js"></script>
+    <script src="js/edit_manager.js"></script>
+
+    <!-- Main App -->
+    <script src="app.js"></script>
+    <script>
+        // Start App
+        document.addEventListener('DOMContentLoaded', () => {
+            window.businessCardApp = new App();
+            window.businessCardApp.init();
+        });
+    </script>
 </body>
 
 </html>
