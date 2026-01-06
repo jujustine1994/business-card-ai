@@ -206,5 +206,8 @@ class FirebaseService {
         return JSON.parse(decryptedStr);
     }
 
+}
+}
+
 // Export singleton
 window.FirebaseService = new FirebaseService();
