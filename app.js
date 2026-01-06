@@ -11,7 +11,10 @@ const App = {
         this.cacheDOM();
         this.bindEvents();
         this.loadSettings();
+        this.bindEvents();
+        this.loadSettings();
         this.render();
+        this.initFirebase();
     },
 
     cacheDOM() {
@@ -27,6 +30,20 @@ const App = {
             modelNameInput: document.getElementById('model-name'),
             demoModeInput: document.getElementById('demo-mode'),
             loadingOverlay: document.getElementById('loading-overlay'),
+            // Auth UI
+            authModal: document.getElementById('auth-modal'),
+            loginBtn: document.getElementById('login-btn'),
+            closeAuthBtn: document.getElementById('close-auth-modal'),
+            googleLoginBtn: document.getElementById('google-login-btn'),
+            emailLoginBtn: document.getElementById('email-login-btn'),
+            emailRegisterBtn: document.getElementById('email-register-btn'),
+            authEmail: document.getElementById('auth-email'),
+            authPassword: document.getElementById('auth-password'),
+            // Duplicate Modal
+            duplicateModal: document.getElementById('duplicate-modal'),
+            duplicateContainer: document.getElementById('duplicate-container'),
+            discardAllBtn: document.getElementById('discard-all-btn'),
+            keepAllBtn: document.getElementById('keep-all-btn'),
             // Search elements
             searchInput: document.getElementById('search-input'),
             clearSearchBtn: document.getElementById('clear-search')
@@ -77,7 +94,77 @@ const App = {
             this.dom.searchInput.value = '';
             this.handleSearch('');
             this.dom.searchInput.focus();
+            this.handleSearch('');
+            this.dom.searchInput.focus();
+            this.handleSearch('');
+            this.dom.searchInput.focus();
         });
+
+        // Auth Events
+        if (this.dom.loginBtn) {
+            this.dom.loginBtn.addEventListener('click', () => {
+                this.dom.authModal.classList.remove('hidden');
+                this.dom.authModal.classList.add('visible');
+            });
+        }
+
+        if (this.dom.closeAuthBtn) {
+            this.dom.closeAuthBtn.addEventListener('click', () => {
+                this.dom.authModal.classList.remove('visible');
+                setTimeout(() => this.dom.authModal.classList.add('hidden'), 200);
+            });
+        }
+
+        if (this.dom.googleLoginBtn) {
+            this.dom.googleLoginBtn.addEventListener('click', async () => {
+                await window.FirebaseService.signInWithGoogle();
+                this.dom.authModal.classList.remove('visible');
+                this.dom.authModal.classList.add('hidden');
+            });
+        }
+
+        if (this.dom.emailLoginBtn) {
+            this.dom.emailLoginBtn.addEventListener('click', async () => {
+                const email = this.dom.authEmail.value;
+                const password = this.dom.authPassword.value;
+                if (!email || !password) return alert('請輸入 Email 和密碼');
+
+                try {
+                    await window.FirebaseService.signInWithEmail(email, password);
+                    this.dom.authModal.classList.remove('visible');
+                    this.dom.authModal.classList.add('hidden');
+                } catch (e) {
+                    alert('登入失敗: ' + e.message);
+                }
+            });
+        }
+
+        if (this.dom.emailRegisterBtn) {
+            this.dom.emailRegisterBtn.addEventListener('click', async () => {
+                const email = this.dom.authEmail.value;
+                const password = this.dom.authPassword.value;
+                if (!email || !password) return alert('請輸入 Email 和密碼');
+
+                try {
+                    await window.FirebaseService.registerWithEmail(email, password);
+                    // Usually auto logs in
+                    this.dom.authModal.classList.remove('visible');
+                    this.dom.authModal.classList.add('hidden');
+                } catch (e) {
+                    alert('註冊失敗: ' + e.message);
+                }
+            });
+        }
+
+        // Duplicate Modal Events
+        this.dom.discardAllBtn.addEventListener('click', () => this.resolveAllDuplicates('discard'));
+        this.dom.keepAllBtn.addEventListener('click', () => this.resolveAllDuplicates('keep'));
+    },
+
+    initFirebase() {
+        if (window.FirebaseService) {
+            window.FirebaseService.init();
+        }
     },
 
     loadSettings() {
@@ -93,14 +180,38 @@ const App = {
         this.showLoading(true);
 
         try {
+            let allNewResults = [];
             for (let i = 0; i < files.length; i++) {
                 const base64 = await this.readFileAsBase64(files[i]);
                 const result = await window.aiService.processImage(base64);
-                this.mergeData(result);
+                if (Array.isArray(result)) {
+                    allNewResults = allNewResults.concat(result);
+                }
             }
-            this.render();
-            // Reset input so same file can be selected again if needed
-            this.dom.cameraInput.value = '';
+
+            // Identify Duplicates vs Clean Data
+            const { cleanData, duplicates } = this.identifyDuplicates(allNewResults);
+
+            // 1. Merge clean data immediately
+            if (cleanData.length > 0) {
+                this.mergeData(cleanData);
+            }
+
+            // 2. If duplicates exist, show modal
+            if (duplicates.length > 0) {
+                this.currentDuplicates = duplicates; // Store for action
+                this.renderDuplicatesModal(duplicates);
+            } else {
+                this.render(); // If no duplicates, just render
+                // Reset input
+                this.dom.cameraInput.value = '';
+                // Only reset if fully done. If duplicates pending, wait.
+            }
+
+            if (duplicates.length === 0) {
+                this.dom.cameraInput.value = '';
+            }
+
         } catch (error) {
             alert(`處理失敗: ${error.message}`);
         } finally {
@@ -117,35 +228,215 @@ const App = {
         });
     },
 
-    /**
-     * Merge new results into existing data (Rule A, B, C)
-     */
-    mergeData(newResults) {
-        if (!Array.isArray(newResults)) return;
+    identifyDuplicates(newResults) {
+        const cleanData = [];
+        const duplicates = [];
 
         newResults.forEach(newGroup => {
+            const existingGroup = this.data.find(g =>
+                (g.company || '').toLowerCase() === (newGroup.company || '').toLowerCase()
+            );
+
+            if (existingGroup) {
+                // Check people inside this company
+                newGroup.people.forEach(newPerson => {
+                    const existingPerson = existingGroup.people.find(p =>
+                        (p.name || '').toLowerCase() === (newPerson.name || '').toLowerCase()
+                    );
+
+                    if (existingPerson) {
+                        // Found duplicate person
+                        duplicates.push({
+                            companyName: existingGroup.company,
+                            existing: existingPerson,
+                            new: newPerson,
+                            newGroupRaw: newGroup // Ref to structure to rebuild if needed
+                        });
+                    } else {
+                        // New person in existing company
+                        cleanData.push({
+                            company: existingGroup.company,
+                            people: [newPerson]
+                        });
+                    }
+                });
+            } else {
+                // Totally new company
+                cleanData.push(newGroup);
+            }
+        });
+
+        return { cleanData, duplicates };
+    },
+
+    renderDuplicatesModal(duplicates) {
+        this.dom.duplicateContainer.innerHTML = '';
+
+        duplicates.forEach((dup, index) => {
+            const el = document.createElement('div');
+            el.className = 'duplicate-item';
+            el.innerHTML = `
+                <div class="duplicate-title">${dup.companyName} - ${dup.existing.name}</div>
+                <div class="comparison-grid">
+                    <div class="comparison-col">
+                        <div class="col-header">現有資料 (Existing)</div>
+                        ${this.renderPersonDetails(dup.existing)}
+                    </div>
+                    <div class="comparison-col col-new">
+                        <div class="col-header">新掃描資料 (New)</div>
+                        ${this.renderPersonDetails(dup.new)}
+                    </div>
+                </div>
+                <div class="duplicate-actions">
+                    <button class="action-btn-sm btn-discard" onclick="App.resolveSingleDuplicate(${index}, 'discard')">捨棄 (Keep Old)</button>
+                    <button class="action-btn-sm btn-keep" onclick="App.resolveSingleDuplicate(${index}, 'keep')">更新 (Update)</button>
+                </div>
+            `;
+            this.dom.duplicateContainer.appendChild(el);
+        });
+
+        this.dom.duplicateModal.classList.remove('hidden');
+        this.dom.duplicateModal.classList.add('visible');
+    },
+
+    renderPersonDetails(person) {
+        return `
+            <div class="data-row">
+                <div class="data-label">職稱</div>
+                <div class="data-value">${person.title || '-'}</div>
+            </div>
+            <div class="data-row">
+                <div class="data-label">Email</div>
+                <div class="data-value">${person.email || '-'}</div>
+            </div>
+            <div class="data-row">
+                <div class="data-label">電話</div>
+                <div class="data-value">${(person.phones || []).join(', ') || '-'}</div>
+            </div>
+            <div class="data-row">
+                <div class="data-label">地址</div>
+                <div class="data-value">${person.address || '-'}</div>
+            </div>
+        `;
+    },
+
+    resolveSingleDuplicate(index, action) {
+        const dup = this.currentDuplicates[index];
+        if (!dup) return;
+
+        if (action === 'keep') {
+            // Updated to explicitly call save for Cloud
+            // In Cloud-First, mergeData is mostly for local state until sync happens, 
+            // but effectively we need to push to cloud.
+
+            // Reconstruct full group for saving
+            const groupToSave = dup.newGroupRaw;
+            // IMPORTANT: newGroupRaw in identifyDuplicates needs to be passed correctly.
+            // dup.new is just the person. 
+            // We need to save the whole group structure or update the specific person in the group.
+
+            // Simplified approach for now:
+            // 1. Update local data
+            // 2. Call Save
+
+            this.mergeAndSave(dup.companyName, dup.new);
+        }
+        // If discard, do nothing
+
+        // Remove from UI
+        this.currentDuplicates[index] = null; // Mark handled
+
+        // Re-render modal or close if empty
+        const remaining = this.currentDuplicates.filter(d => d !== null);
+        if (remaining.length === 0) {
+            this.closeDuplicateModal();
+        } else {
+            // Hide the specific item visually
+            const items = this.dom.duplicateContainer.children;
+            if (items[index]) items[index].style.display = 'none';
+        }
+    },
+
+    resolveAllDuplicates(action) {
+        if (action === 'keep') {
+            this.currentDuplicates.filter(d => d !== null).forEach(dup => {
+                this.mergeAndSave(dup.companyName, dup.new);
+            });
+        }
+        this.closeDuplicateModal();
+    },
+
+    closeDuplicateModal() {
+        this.dom.duplicateModal.classList.remove('visible');
+        setTimeout(() => {
+            this.dom.duplicateModal.classList.add('hidden');
+            this.render(); // update view with any changes
+            this.dom.cameraInput.value = '';
+        }, 200);
+        this.currentDuplicates = [];
+    },
+
+    /**
+     * Merge new results into existing data (Rule A, B, C)
+     * AND Save to Cloud
+     */
+    async mergeData(newResults) {
+        if (!Array.isArray(newResults)) return;
+
+        // Use a loop to handle async saves
+        for (const newGroup of newResults) {
             // Find existing company group
             const existingGroup = this.data.find(g => g.company === newGroup.company);
 
             if (existingGroup) {
-                // Merge people into existing company
+                // Merge people into existing company logic
+                // We need to clone to modify
+                const people = [...existingGroup.people];
+
                 newGroup.people.forEach(newPerson => {
-                    const existingPersonIndex = existingGroup.people.findIndex(
+                    const existingPersonIndex = people.findIndex(
                         p => p.name === newPerson.name
                     );
 
                     if (existingPersonIndex !== -1) {
-                        // Update/Overwrite existing person (Rule B: Keep partial logic, here we just overwrite for simplicity or assume better info)
-                        existingGroup.people[existingPersonIndex] = newPerson;
+                        people[existingPersonIndex] = newPerson;
                     } else {
-                        existingGroup.people.push(newPerson);
+                        people.push(newPerson);
                     }
                 });
+
+                // Update implementation
+                existingGroup.people = people;
+
+                // Save to cloud
+                await window.FirebaseService.saveCardGroup(existingGroup);
+
             } else {
                 // Add new company group
                 this.data.push(newGroup);
+                // Save to cloud
+                await window.FirebaseService.saveCardGroup(newGroup);
             }
-        });
+        }
+        // No need to call render() here because syncData() listener will trigger render() 
+        // when Cloud Firestore updates. But for UX immediacy we *could*, but strictly Cloud-First relies on the listener.
+    },
+
+    // Helper to merge single person and save
+    async mergeAndSave(companyName, newPerson) {
+        const existingGroup = this.data.find(g => g.company === companyName);
+        if (existingGroup) {
+            const people = [...existingGroup.people];
+            const idx = people.findIndex(p => p.name === newPerson.name);
+            if (idx !== -1) people[idx] = newPerson;
+            else people.push(newPerson);
+            existingGroup.people = people;
+            await window.FirebaseService.saveCardGroup(existingGroup);
+        } else {
+            // Should not happen in duplicate logic but useful for generic
+            const newGroup = { company: companyName, people: [newPerson] };
+            await window.FirebaseService.saveCardGroup(newGroup);
+        }
     },
 
     showLoading(show) {

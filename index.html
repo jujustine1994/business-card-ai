@@ -36,24 +36,27 @@
                         </path>
                     </svg>
                 </button>
-            </div>
-            <div class="search-bar-container">
-                <div class="search-input-wrapper">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        class="search-icon">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" id="search-input" placeholder="搜尋姓名、公司、電話..." aria-label="搜尋">
-                    <button id="clear-search" class="icon-btn hidden" aria-label="清除搜尋">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
+                <div id="auth-container">
+                    <button id="login-btn" class="primary-btn small-btn">登入</button>
+                    <img id="user-avatar" src="" class="avatar hidden" alt="User" />
                 </div>
-            </div>
+                <div class="search-bar-container">
+                    <div class="search-input-wrapper">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" class="search-icon">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="search-input" placeholder="搜尋姓名、公司、電話..." aria-label="搜尋">
+                        <button id="clear-search" class="icon-btn hidden" aria-label="清除搜尋">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
         </header>
 
         <main class="canvas-area" id="canvas-area">
@@ -151,14 +154,66 @@
         </div>
     </div>
 
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>登入 / 註冊</h3>
+                <button id="close-auth-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button id="google-login-btn" class="google-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="#34A853" />
+                        <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="#EA4335" />
+                    </svg>
+                    使用 Google 帳號登入
+                </button>
+
+                <div class="divider">或使用 Email</div>
+
+                <div class="input-group">
+                    <input type="email" id="auth-email" placeholder="電子郵件" class="auth-input">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="auth-password" placeholder="密碼" class="auth-input">
+                </div>
+
+                <div class="auth-actions">
+                    <button id="email-login-btn" class="primary-btn">登入</button>
+                    <button id="email-register-btn" class="secondary-btn">註冊</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="spinner"></div>
         <p>AI 正在辨識與整理中...</p>
     </div>
 
+    <!-- Firebase SDKs (Compat version for easier html usage) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Config & Service -->
+    <script src="firebase_config.js"></script>
+    <script src="firebase_service.js"></script>
+
     <!-- Add version cache busting -->
-    <script src="ai_service.js?v=3"></script>
-    <script src="app.js?v=3"></script>
+    <script src="ai_service.js?v=4"></script>
+    <script src="app.js?v=4"></script>
 </body>
 
 </html>
