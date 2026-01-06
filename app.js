@@ -12,6 +12,7 @@ const App = {
         this.bindEvents();
         this.loadSettings();
         this.render();
+        this.showLoading(false); // Safety ensure hidden
         this.initFirebase();
     },
 
