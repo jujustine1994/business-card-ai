@@ -138,7 +138,11 @@ class FirebaseService {
             });
 
             // Update App Data
-            if (window.App) {
+            if (window.businessCardApp) {
+                window.businessCardApp.data = data;
+                window.businessCardApp.render(data);
+            } else if (window.App && typeof window.App.render === 'function') {
+                // Fallback (legacy)
                 window.App.data = data;
                 window.App.render(data);
             }

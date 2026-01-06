@@ -148,8 +148,8 @@ class DuplicateManager {
                     </div>
                 </div>
                 <div class="duplicate-actions">
-                    <button class="action-btn-sm btn-discard" onclick="window.App.duplicateManager.resolveSingleDuplicate(${index}, 'discard')">直接刪除 (Delete)</button>
-                    <button class="action-btn-sm btn-keep" onclick="window.App.duplicateManager.resolveSingleDuplicate(${index}, 'keep')">合併並保留左側 (Merge)</button>
+                    <button class="action-btn-sm btn-discard" onclick="window.businessCardApp.duplicateManager.resolveSingleDuplicate(${index}, 'discard')">直接刪除 (Delete)</button>
+                    <button class="action-btn-sm btn-keep" onclick="window.businessCardApp.duplicateManager.resolveSingleDuplicate(${index}, 'keep')">合併並保留左側 (Merge)</button>
                 </div>
             `;
             this.dom.duplicateContainer.appendChild(el);

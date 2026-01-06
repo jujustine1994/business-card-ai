@@ -60,7 +60,27 @@ body {
     align-items: center;
     width: 100%;
     min-height: 40px;
-    /* Ensure touch target size */
+    min-height: 40px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-color);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.avatar:hover {
+    transform: scale(1.1);
 }
 
 /* Logo Fix */
