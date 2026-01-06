@@ -740,7 +740,36 @@ const App = {
             this.dom.canvasArea.appendChild(groupEl);
         });
     }
+},
+
+    showToast(message, type = 'success') {
+        let toast = document.getElementById('toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+        }
+
+        toast.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>${message}</span>
+        `;
+
+        // Force reflow
+        void toast.offsetWidth;
+        toast.classList.add('visible');
+
+        if (this.toastTimeout) clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+            toast.classList.remove('visible');
+        }, 3000);
+    }
 };
+
+window.App = App;
 
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
