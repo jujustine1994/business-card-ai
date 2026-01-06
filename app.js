@@ -58,6 +58,7 @@ class App {
             closeEditModalBtn: document.getElementById('close-edit-modal'),
             saveEditBtn: document.getElementById('save-edit-btn'),
             deleteCardBtn: document.getElementById('delete-card-btn'),
+            customDupBtn: document.getElementById('check-dup-btn'),
             // Edit Inputs
             editCompanyInput: document.getElementById('edit-company'),
             editNameInput: document.getElementById('edit-name'),
@@ -75,6 +76,13 @@ class App {
         const galleryInput = document.getElementById('gallery-input');
         if (galleryInput) {
             galleryInput.addEventListener('change', (e) => this.handleFileUpload(e));
+        }
+
+        // Check Dup Btn
+        if (this.dom.customDupBtn) {
+            this.dom.customDupBtn.addEventListener('click', () => {
+                this.scanForDuplicates();
+            });
         }
 
         // Modal Events
@@ -293,6 +301,53 @@ class App {
         return { cleanData, duplicates };
     }
 
+    scanForDuplicates() {
+        // Manually check all data for duplicates
+        const duplicates = [];
+
+        this.data.forEach(group => {
+            // 1. Check duplicates within the same company
+            const seenNames = {};
+            group.people.forEach(person => {
+                const lowerName = (person.name || '').trim().toLowerCase();
+                if (!lowerName) return;
+
+                if (!seenNames[lowerName]) {
+                    seenNames[lowerName] = [person];
+                } else {
+                    seenNames[lowerName].push(person);
+                }
+            });
+
+            // Process duplications
+            Object.keys(seenNames).forEach(name => {
+                const persons = seenNames[name];
+                if (persons.length > 1) {
+                    // Found duplicates inside ONE company
+                    // We take the first one as "Keeping" (or existing) and others as "New" to be merged
+                    for (let i = 1; i < persons.length; i++) {
+                        duplicates.push({
+                            companyName: group.company,
+                            existing: persons[0], // Base
+                            new: persons[i], // Candidate to merge
+                            newGroupRaw: { company: group.company, people: [persons[i]] }, // Mock structure for merge function
+                            isInternal: true, // Flag for specific handling logic if needed
+                            groupRef: group
+                        });
+                    }
+                }
+            });
+        });
+
+        if (duplicates.length > 0) {
+            this.currentDuplicates = duplicates;
+            this.renderDuplicatesModal(duplicates);
+            this.showToast(`發現 ${duplicates.length} 組重複名片`);
+        } else {
+            this.showToast('未發現重複名片', 'success');
+        }
+    }
+
     renderDuplicatesModal(duplicates) {
         this.dom.duplicateContainer.innerHTML = '';
 
@@ -350,14 +405,40 @@ class App {
 
         if (action === 'keep') {
             this.mergeAndSave(dup.companyName, dup.new);
+            // If it was internal duplicate (already in data), after merge we need to ensure the "duplicate" entry is removed
+            // mergeAndSave usually updates the existing entry. 
+            // In internal duplicate case:
+            // "existing" is Person A, "new" is Person B. 
+            // mergeAndSave(A, B) -> Updates A with B's info.
+            // B still exists in the array?
+            // Yes, because we just updated A. B is a separate object in the array.
+            // So we must remove B explicitly.
+
+            if (dup.isInternal && dup.groupRef) {
+                const pIndex = dup.groupRef.people.indexOf(dup.new);
+                if (pIndex !== -1) {
+                    dup.groupRef.people.splice(pIndex, 1);
+                    // Save the group cleanup immediately
+                    window.FirebaseService.saveCardGroup(dup.groupRef);
+                }
+            }
+        } else if (action === 'discard') {
+            // Discard "new" means we delete "Person B"
+            if (dup.isInternal && dup.groupRef) {
+                const pIndex = dup.groupRef.people.indexOf(dup.new);
+                if (pIndex !== -1) {
+                    dup.groupRef.people.splice(pIndex, 1);
+                    window.FirebaseService.saveCardGroup(dup.groupRef);
+                }
+            }
         }
-        // If discard, do nothing
 
         // Remove from UI
         this.currentDuplicates[index] = null; // Mark handled
 
         // Re-render modal or close if empty
         const remaining = this.currentDuplicates.filter(d => d !== null);
+
         if (remaining.length === 0) {
             this.closeDuplicateModal();
         } else {
