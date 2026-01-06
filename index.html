@@ -163,8 +163,16 @@
                 <!-- Dynamic Content Injection -->
             </div>
             <div class="modal-footer duplicate-footer">
-                <button id="discard-all-btn" class="secondary-btn">全部捨棄</button>
-                <button id="keep-all-btn" class="primary-btn">全部更新</button>
+                <div class="batch-actions">
+                    <button id="discard-all-btn" class="secondary-btn">全部刪除 (預覽)</button>
+                    <button id="keep-all-btn" class="secondary-btn">全部合併 (預覽)</button>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button id="cancel-dups-btn" class="secondary-btn"
+                        style="flex: 1; border: 1px solid #ef4444; color: #ef4444;">不儲存離開</button>
+                    <button id="save-dups-btn" class="primary-btn"
+                        style="flex: 2; background: #10b981;">確認並儲存變更</button>
+                </div>
             </div>
         </div>
     </div>
