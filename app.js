@@ -739,8 +739,7 @@ const App = {
 
             this.dom.canvasArea.appendChild(groupEl);
         });
-    }
-},
+    },
 
     showToast(message, type = 'success') {
         let toast = document.getElementById('toast-notification');
