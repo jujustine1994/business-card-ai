@@ -682,8 +682,7 @@ const App = {
                 }
 
                 personEl.innerHTML = `
-                personEl.innerHTML = `
-                    < div class="card-edit-btn-wrapper" >
+                    <div class="card-edit-btn-wrapper">
                          <div class="person-name">${person.name || 'Unknown Name'}</div>
                          <button class="icon-btn edit-icon-btn" aria-label="編輯">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -715,7 +714,7 @@ const App = {
                         ` : ''}
                     </ul>
 `;
-                
+
                 // Add click listener to edit button
                 const editBtn = personEl.querySelector('.edit-icon-btn');
                 editBtn.addEventListener('click', (e) => {
@@ -725,7 +724,7 @@ const App = {
                     const pIndex = group.people.indexOf(person);
                     // Find group index in main data (crucial for logic)
                     const gIndex = this.data.findIndex(g => g.company === group.company);
-                    
+
                     this.openEditModal(person, group, gIndex, pIndex);
                 });
 
