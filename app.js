@@ -67,7 +67,8 @@ class App {
             editTitleInput: document.getElementById('edit-title'),
             editEmailInput: document.getElementById('edit-email'),
             editPhoneInput: document.getElementById('edit-phone'),
-            editAddressInput: document.getElementById('edit-address')
+            editAddressInput: document.getElementById('edit-address'),
+            editNoteInput: document.getElementById('edit-note')
         };
     }
 
@@ -186,8 +187,18 @@ class App {
         }
 
         // Duplicate Modal Events
-        this.dom.discardAllBtn.addEventListener('click', () => this.resolveAllDuplicates('discard'));
-        this.dom.keepAllBtn.addEventListener('click', () => this.resolveAllDuplicates('keep'));
+        // this.dom.discardAllBtn.addEventListener('click', () => this.resolveAllDuplicates('discard')); // Removed
+        // this.dom.keepAllBtn.addEventListener('click', () => this.resolveAllDuplicates('keep')); // Removed
+
+        const saveDupsBtn = document.getElementById('save-dups-btn');
+        if (saveDupsBtn) {
+            saveDupsBtn.addEventListener('click', () => this.saveDuplicateResolution());
+        }
+
+        const cancelDupsBtn = document.getElementById('cancel-dups-btn');
+        if (cancelDupsBtn) {
+            cancelDupsBtn.addEventListener('click', () => this.cancelDuplicateResolution());
+        }
 
         // Edit Modal Events
         this.dom.closeEditModalBtn.addEventListener('click', () => this.closeEditModal());
@@ -304,6 +315,11 @@ class App {
     }
 
     scanForDuplicates() {
+        console.log('Starting scanForDuplicates');
+        // Backup data for rollback
+        this.dataBackup = JSON.parse(JSON.stringify(this.data));
+        this.modifiedGroups = new Set();
+
         // Global Check across ALL groups
         const duplicates = [];
         const allPeopleMap = {};
@@ -329,19 +345,17 @@ class App {
         Object.keys(allPeopleMap).forEach(name => {
             const entries = allPeopleMap[name];
             if (entries.length > 1) {
-                // We have duplicates.
+                // We have duplicates using Anchor strategy (Item 0 is anchor)
                 const anchor = entries[0];
-
+                // Compare all others to the anchor
                 for (let i = 1; i < entries.length; i++) {
                     const candidate = entries[i];
                     duplicates.push({
                         companyName: anchor.group.company,
                         existing: anchor.person,
                         existingGroup: anchor.group,
-
                         new: candidate.person,
                         newGroup: candidate.group,
-
                         displayCompanyNameA: anchor.group.company,
                         displayCompanyNameB: candidate.group.company
                     });
@@ -352,7 +366,7 @@ class App {
         if (duplicates.length > 0) {
             this.currentDuplicates = duplicates;
             this.renderDuplicatesModal(duplicates);
-            this.showToast(`發現 ${duplicates.length} 組重複名片`);
+            this.showToast(`發現 ${duplicates.length} 組重複 (預覽模式)`);
         } else {
             this.showToast('未發現重複名片', 'success');
         }
@@ -360,7 +374,6 @@ class App {
 
     renderDuplicatesModal(duplicates) {
         this.dom.duplicateContainer.innerHTML = '';
-
         duplicates.forEach((dup, index) => {
             const el = document.createElement('div');
             el.className = 'duplicate-item';
@@ -395,29 +408,16 @@ class App {
             `;
             this.dom.duplicateContainer.appendChild(el);
         });
-
         this.dom.duplicateModal.classList.remove('hidden');
         this.dom.duplicateModal.classList.add('visible');
     }
 
     renderPersonDetails(person) {
         return `
-            <div class="data-row">
-                <div class="data-label">職稱</div>
-                <div class="data-value">${person.title || '-'}</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Email</div>
-                <div class="data-value">${person.email || '-'}</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">電話</div>
-                <div class="data-value">${(person.phones || []).join(', ') || '-'}</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">地址</div>
-                <div class="data-value">${person.address || '-'}</div>
-            </div>
+            <div class="data-row"><div class="data-label">職稱</div><div class="data-value">${person.title || '-'}</div></div>
+            <div class="data-row"><div class="data-label">Email</div><div class="data-value">${person.email || '-'}</div></div>
+            <div class="data-row"><div class="data-label">電話</div><div class="data-value">${(person.phones || []).join(', ') || '-'}</div></div>
+            <div class="data-row"><div class="data-label">地址</div><div class="data-value">${person.address || '-'}</div></div>
         `;
     }
 
@@ -426,57 +426,99 @@ class App {
         if (!dup) return;
 
         if (action === 'keep') {
-            this.mergeAndSave(dup.companyName, dup.new);
-            // If it was internal duplicate (already in data), after merge we need to ensure the "duplicate" entry is removed
-            // mergeAndSave usually updates the existing entry. 
-            // In internal duplicate case:
-            // "existing" is Person A, "new" is Person B. 
-            // mergeAndSave(A, B) -> Updates A with B's info.
-            // B still exists in the array?
-            // Yes, because we just updated A. B is a separate object in the array.
-            // So we must remove B explicitly.
+            const combinedPerson = { ...dup.existing };
+            // Combine Logic
+            const phones = new Set([...(dup.existing.phones || []), ...(dup.new.phones || [])]);
+            combinedPerson.phones = Array.from(phones);
+            if (!combinedPerson.title) combinedPerson.title = dup.new.title;
+            if (!combinedPerson.email) combinedPerson.email = dup.new.email;
+            if (!combinedPerson.address) combinedPerson.address = dup.new.address;
 
-            if (dup.isInternal && dup.groupRef) {
-                const pIndex = dup.groupRef.people.indexOf(dup.new);
-                if (pIndex !== -1) {
-                    dup.groupRef.people.splice(pIndex, 1);
-                    // Save the group cleanup immediately
-                    window.FirebaseService.saveCardGroup(dup.groupRef);
-                }
+            // 1. Update Anchor (Group A)
+            const groupA = dup.existingGroup;
+            const pIndexA = groupA.people.indexOf(dup.existing);
+            if (pIndexA !== -1) {
+                // Update the object in place
+                Object.assign(dup.existing, combinedPerson);
+                // Mark group as modified
+                this.modifiedGroups.add(groupA);
             }
+
+            // 2. Remove Candidate (Group B)
+            const groupB = dup.newGroup;
+            const pIndexB = groupB.people.indexOf(dup.new);
+            if (pIndexB !== -1) {
+                groupB.people.splice(pIndexB, 1);
+                this.modifiedGroups.add(groupB);
+            }
+
         } else if (action === 'discard') {
-            // Discard "new" means we delete "Person B"
-            if (dup.isInternal && dup.groupRef) {
-                const pIndex = dup.groupRef.people.indexOf(dup.new);
-                if (pIndex !== -1) {
-                    dup.groupRef.people.splice(pIndex, 1);
-                    window.FirebaseService.saveCardGroup(dup.groupRef);
-                }
+            // 1. Just Remove Candidate (Group B)
+            const groupB = dup.newGroup;
+            const pIndexB = groupB.people.indexOf(dup.new);
+            if (pIndexB !== -1) {
+                groupB.people.splice(pIndexB, 1);
+                this.modifiedGroups.add(groupB);
             }
         }
 
-        // Remove from UI
-        this.currentDuplicates[index] = null; // Mark handled
-
-        // Re-render modal or close if empty
-        const remaining = this.currentDuplicates.filter(d => d !== null);
-
-        if (remaining.length === 0) {
-            this.closeDuplicateModal();
-        } else {
-            // Hide the specific item visually
-            const items = this.dom.duplicateContainer.children;
-            if (items[index]) items[index].style.display = 'none';
+        this.currentDuplicates[index] = null;
+        const items = this.dom.duplicateContainer.children;
+        if (items[index]) {
+            items[index].style.display = 'none';
         }
     }
 
     resolveAllDuplicates(action) {
-        if (action === 'keep') {
-            this.currentDuplicates.filter(d => d !== null).forEach(dup => {
-                this.mergeAndSave(dup.companyName, dup.new);
-            });
+        [...this.currentDuplicates].forEach((dup, index) => {
+            if (dup) this.resolveSingleDuplicate(index, action);
+        });
+        this.showToast(action === 'keep' ? '已全部標記為更新 (請確認後按儲存)' : '已全部標記為不更新 (請確認後按儲存)');
+    }
+
+    cancelDuplicateResolution() {
+        console.log('Cancelling resolution...');
+        if (this.dataBackup) {
+            // Restore deep copy
+            this.data = JSON.parse(JSON.stringify(this.dataBackup));
+            this.dataBackup = null;
         }
+        this.modifiedGroups.clear();
         this.closeDuplicateModal();
+        this.render();
+        this.showToast('已取消變更');
+    }
+
+    async saveDuplicateResolution() {
+        if (this.modifiedGroups.size === 0) {
+            this.closeDuplicateModal();
+            return;
+        }
+
+        this.showLoading(true);
+        try {
+            const promises = [];
+            this.modifiedGroups.forEach(group => {
+                if (group.people.length === 0) {
+                    promises.push(window.FirebaseService.deleteGroup(group.id));
+                    const idx = this.data.indexOf(group);
+                    if (idx !== -1) this.data.splice(idx, 1);
+                } else {
+                    promises.push(window.FirebaseService.saveCardGroup(group));
+                }
+            });
+
+            await Promise.all(promises);
+            this.showToast('變更已永久儲存');
+            this.dataBackup = null; // Clear backup on success
+            this.closeDuplicateModal();
+        } catch (e) {
+            alert('儲存失敗: ' + e.message);
+            console.error(e);
+        } finally {
+            this.showLoading(false);
+            this.modifiedGroups.clear();
+        }
     }
 
     closeDuplicateModal() {
