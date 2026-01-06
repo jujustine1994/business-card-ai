@@ -63,13 +63,18 @@ class FirebaseService {
 
     // --- Authentication ---
 
-    async signInWithGoogle() {
+    async loginWithGoogle() {
+        if (!this.auth) {
+            // Attempt re-init if auth is missing
+            this.init();
+            if (!this.auth) throw new Error('Firebase Auth not initialized');
+        }
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
             await this.auth.signInWithPopup(provider);
         } catch (error) {
-            console.error("Login failed:", error);
-            alert("登入失敗: " + error.message);
+            console.error("Google Login Error:", error);
+            throw error;
         }
     }
 
