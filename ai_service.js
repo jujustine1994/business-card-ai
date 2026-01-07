@@ -95,13 +95,13 @@ class AIService {
         this.apiKey = localStorage.getItem('gemini_api_key') || '';
 
         let storedModel = localStorage.getItem('gemini_model_name');
-        // Auto-migrate legacy default to new default
-        if (storedModel === 'gemini-2.5-flash') {
-            storedModel = 'gemini-3-flash';
+        // Auto-migrate: Revert 3.0 back to 2.5 (since 3.0 failed)
+        if (storedModel === 'gemini-3-flash') {
+            storedModel = 'gemini-2.5-flash';
             localStorage.setItem('gemini_model_name', storedModel);
         }
 
-        this.modelName = storedModel || 'gemini-3-flash';
+        this.modelName = storedModel || 'gemini-2.5-flash';
         this.isDemoMode = localStorage.getItem('is_demo_mode') === 'true';
     }
 
@@ -111,8 +111,8 @@ class AIService {
     }
 
     setModelName(name) {
-        // Default to gemini-3-flash if empty
-        const cleanName = name.trim() || 'gemini-3-flash';
+        // Default to gemini-2.5-flash if empty
+        const cleanName = name.trim() || 'gemini-2.5-flash';
         this.modelName = cleanName;
         localStorage.setItem('gemini_model_name', cleanName);
     }
