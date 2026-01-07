@@ -31,6 +31,8 @@ class FirebaseService {
             this.user = user;
             const loginBtn = document.getElementById('login-btn');
             const avatar = document.getElementById('user-avatar');
+            const dropdown = document.getElementById('user-dropdown');
+            const logoutBtn = document.getElementById('logout-btn');
 
             if (user) {
                 console.log("User logged in:", user.uid);
@@ -39,6 +41,24 @@ class FirebaseService {
                 if (avatar) {
                     avatar.src = user.photoURL || 'https://via.placeholder.com/40';
                     avatar.classList.remove('hidden');
+
+                    // Toggle Dropdown
+                    avatar.onclick = (e) => {
+                        e.stopPropagation();
+                        dropdown.classList.toggle('hidden');
+                    };
+
+                    // Close dropdown when clicking outside
+                    window.addEventListener('click', () => {
+                        dropdown.classList.add('hidden');
+                    });
+                }
+
+                if (logoutBtn) {
+                    logoutBtn.onclick = () => {
+                        this.signOut();
+                        dropdown.classList.add('hidden');
+                    };
                 }
 
                 // Start Syncing Data
@@ -48,6 +68,7 @@ class FirebaseService {
                 // Update UI
                 if (loginBtn) loginBtn.classList.remove('hidden');
                 if (avatar) avatar.classList.add('hidden');
+                if (dropdown) dropdown.classList.add('hidden');
 
                 // Stop Syncing
                 if (this.unsubscribeSnapshot) {
