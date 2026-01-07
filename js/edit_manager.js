@@ -1,3 +1,9 @@
+/**
+ * ============================================================================
+ *  MODULE: Edit Manager
+ *  RESPONSIBILITY: Handling Edit/Delete Modal and Updates
+ * ============================================================================
+ */
 class EditManager {
     constructor(app) {
         this.app = app;
@@ -37,8 +43,6 @@ class EditManager {
             groupIndex,
             personIndex,
             originalCompany: companyGroup.company,
-            // Store ref to original person object to ensure we update correct one if array shifts? 
-            // Actually indexes are brittle if data changes underneath, but for modal editing it's usually fine blockingly
         };
 
         const d = this.dom.inputs;

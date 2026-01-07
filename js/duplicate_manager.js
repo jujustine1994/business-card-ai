@@ -1,3 +1,9 @@
+/**
+ * ============================================================================
+ *  MODULE: Duplicate Manager
+ *  RESPONSIBILITY: Conflict Detection & Resolution Logic
+ * ============================================================================
+ */
 class DuplicateManager {
     constructor(app) {
         this.app = app;

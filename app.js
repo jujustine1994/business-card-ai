@@ -1,11 +1,26 @@
 /**
- * Main Application Logic
- * Coordinator of Managers
+ * ============================================================================
+ *  MODULE: App Coordinator
+ *  RESPONSIBILITY: Central State, Initialization, and Manager Orchestration
+ * ============================================================================
  */
-
 class App {
     constructor() {
-        this.data = [];
+        this.data = [
+            {
+                company: "蹦挖娛樂",
+                people: [
+                    {
+                        name: "張O航",
+                        title: "董事長",
+                        email: "Example@example.tw",
+                        phones: ["(02) 87878787"],
+                        address: "台北市信義區",
+                        note: "測試資料，若有新增資料即會刪除"
+                    }
+                ]
+            }
+        ];
         this.dom = {
             loadingOverlay: document.getElementById('loading-overlay'),
             canvasArea: document.getElementById('canvas-area'),
@@ -283,6 +298,7 @@ class App {
                     <div class="card-details">
                         ${person.email ? `<div>📧 ${person.email}</div>` : ''}
                         ${(person.phones && person.phones.length > 0) ? `<div>📞 ${person.phones[0]}</div>` : ''}
+                        ${person.address ? `<div>📍 ${person.address}</div>` : ''}
                         ${person.note ? `<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1); color: var(--accent-color); font-size: 0.85rem;">📝 ${person.note}</div>` : ''}
                     </div>
                 `;

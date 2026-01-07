@@ -49,14 +49,19 @@ body {
     z-index: 50;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
-.header-top {
+.header-main-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    align-items: flex-start;
+}
+
+.branding-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .logo {
@@ -67,17 +72,33 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-.settings-gear {
+.settings-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     background: transparent;
-    color: var(--text-secondary);
-    padding: 10px;
     border: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0;
     cursor: pointer;
+    transition: color 0.2s;
+    text-align: left;
+}
+
+.settings-link-btn:hover {
+    color: var(--accent-color);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
 }
 
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--accent-color);

@@ -1,3 +1,9 @@
+/**
+ * ============================================================================
+ *  MODULE: Scan Manager
+ *  RESPONSIBILITY: Camera/File Input & AI Service Delegation
+ * ============================================================================
+ */
 class ScanManager {
     constructor(app) {
         this.app = app;
@@ -33,12 +39,7 @@ class ScanManager {
                 }
             }
 
-            // Delegate logic back to App to handle new data (Dup check etc)
-            // Or better: Call DupManager directly? 
-            // The App coordinator pattern suggests passing data back to app to decide what to do
-            // But let's follow the refactor plan: "Manages AI Service calls"
-
-            // Calling App's method to handle processed data
+            // Calls back to App for Data Handling (Coordinator Pattern)
             this.app.handleScanResults(allNewResults);
 
             // Reset inputs

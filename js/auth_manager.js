@@ -1,3 +1,9 @@
+/**
+ * ============================================================================
+ *  MODULE: Auth Manager
+ *  RESPONSIBILITY: Auth UI & Firebase Auth Delegation
+ * ============================================================================
+ */
 class AuthManager {
     constructor(app) {
         this.app = app;
