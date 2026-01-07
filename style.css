@@ -654,3 +654,8 @@ body {
     border-top-color: var(--accent-color);
     animation: spin 1s linear infinite;
 }
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
