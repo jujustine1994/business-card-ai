@@ -93,7 +93,15 @@ const MockData = [
 class AIService {
     constructor() {
         this.apiKey = localStorage.getItem('gemini_api_key') || '';
-        this.modelName = localStorage.getItem('gemini_model_name') || 'gemini-3-flash';
+
+        let storedModel = localStorage.getItem('gemini_model_name');
+        // Auto-migrate legacy default to new default
+        if (storedModel === 'gemini-2.5-flash') {
+            storedModel = 'gemini-3-flash';
+            localStorage.setItem('gemini_model_name', storedModel);
+        }
+
+        this.modelName = storedModel || 'gemini-3-flash';
         this.isDemoMode = localStorage.getItem('is_demo_mode') === 'true';
     }
 
