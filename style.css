@@ -34,7 +34,7 @@ body {
     background: radial-gradient(circle at top right, #1e293b 0%, #0f172a 60%);
 }
 
-/* Header */
+/* --- 頂部導航列 (App Header) --- */
 .app-header {
     padding: 0.75rem 1.25rem;
     padding-top: calc(0.75rem + env(safe-area-inset-top));
@@ -167,7 +167,7 @@ body {
     /* Slight hover effect */
 }
 
-/* Canvas Area */
+/* --- 主要顯示區 (Canvas Area) --- */
 .canvas-area {
     flex: 1;
     overflow-y: auto;
@@ -206,7 +206,7 @@ body {
     line-height: 1.5;
 }
 
-/* Action Bar (Footer) */
+/* --- 底部操作列 (Action Bar) --- */
 .action-bar {
     padding: 1rem 1.5rem;
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
@@ -353,7 +353,7 @@ body {
     color: var(--accent-color);
 }
 
-/* Modal */
+/* --- 模態視窗共用樣式 (Modal System) --- */
 .modal {
     position: fixed;
     top: 0;
@@ -605,7 +605,7 @@ body {
         font-size: 0.9rem;
     }
 
-    /* --- Business Card Grid --- */
+    /* --- 名片列表與卡片組件 (Business Card Grid & Component) --- */
     .company-group {
         margin-bottom: 2.5rem;
     }
@@ -709,279 +709,281 @@ body {
         color: #0f172a;
         transform: scale(1.1);
         box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+    }
 
-        .action-btn-sm {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
+    /* --- 共用按鈕樣式 (Shared Button Styles) --- */
+    .action-btn-sm {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
 
-        .btn-keep {
-            background: var(--success-color);
-            color: #0f172a;
-        }
+    .btn-keep {
+        background: var(--success-color);
+        color: #0f172a;
+    }
 
-        .btn-discard {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-
-        /* Auth UI Styles */
-        #auth-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-color);
-            object-fit: cover;
-        }
-
-        .small-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.95rem;
-            white-space: nowrap;
-            min-width: 80px;
-        }
-
-        .google-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            background: white;
-            color: #444;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-bottom: 1.5rem;
-        }
-
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
-        }
-
-        .highlight-char {
-            color: #A1A1AA;
-            /* Zinc 400 - Silvery Grey */
-            text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
-        }
-
-        .google-btn:hover {
-            background: #f8f9fa;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin: 1.5rem 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .divider::before {
-            margin-right: .5em;
-        }
-
-        .divider::after {
-            margin-left: .5em;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
+    .btn-discard {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
 
 
-        .auth-actions button {
-            flex: 1;
-            padding: 0.75rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+    /* Auth UI Styles */
+    #auth-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-        /* Edit Button Styles */
-        .card-edit-btn-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid var(--accent-color);
+        object-fit: cover;
+    }
 
-        .edit-icon-btn {
-            opacity: 0.5;
-            padding: 4px;
-            color: var(--text-secondary);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+    .small-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        min-width: 80px;
+    }
 
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--surface-light);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 50px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--accent-color);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 2000;
-            pointer-events: none;
-        }
+    .google-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        background: white;
+        color: #444;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-bottom: 1.5rem;
+    }
 
-        .toast.visible {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+    .logo {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
 
-        .toast svg {
-            color: #10b981;
-            /* Success Green */
-        }
+    .highlight-char {
+        color: #A1A1AA;
+        /* Zinc 400 - Silvery Grey */
+        text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
+    }
 
-        /* --- FIXED AUTH & FORM STYLES --- */
-        .auth-form,
-        .modal-body {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
+    .google-btn:hover {
+        background: #f8f9fa;
+    }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 0px;
-            /* Reset */
-        }
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin: 1.5rem 0;
+    }
 
-        .form-group label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            outline: none;
-        }
+    .divider::before {
+        margin-right: .5em;
+    }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: var(--accent-color);
-            background: rgba(56, 189, 248, 0.05);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
-        }
+    .divider::after {
+        margin-left: .5em;
+    }
 
-        .modal-content.auth-content {
-            max-width: 420px;
-            text-align: center;
-        }
+    .auth-input {
+        width: 100%;
+        padding: 0.75rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
 
-        .google-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            background: white;
-            color: #1a1a1a;
-            border: none;
-            padding: 0.85rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.1s;
-            margin-bottom: 0px;
-        }
+    .auth-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin: 1.5rem 0;
-        }
 
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
+    .auth-actions button {
+        flex: 1;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
 
-        .divider::before {
-            margin-right: 1rem;
-        }
+    /* Edit Button Styles */
+    .card-edit-btn-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
 
-        .divider::after {
-            margin-left: 1rem;
-        }
+    .edit-icon-btn {
+        opacity: 0.5;
+        padding: 4px;
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
 
-        /* Fix Modal Content Padding */
-        .modal-body {
-            padding: 1.5rem;
-        }
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--surface-light);
+        color: var(--text-primary);
+        padding: 12px 24px;
+        border-radius: 50px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--accent-color);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 2000;
+        pointer-events: none;
+    }
 
-        .modal-footer {
-            gap: 1rem;
-            /* Ensure gap between delete and save */
-        }
+    .toast.visible {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+
+    .toast svg {
+        color: #10b981;
+        /* Success Green */
+    }
+
+    /* --- FIXED AUTH & FORM STYLES --- */
+    .auth-form,
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0px;
+        /* Reset */
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: var(--accent-color);
+        background: rgba(56, 189, 248, 0.05);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+    }
+
+    .modal-content.auth-content {
+        max-width: 420px;
+        text-align: center;
+    }
+
+    .google-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        background: white;
+        color: #1a1a1a;
+        border: none;
+        padding: 0.85rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.1s;
+        margin-bottom: 0px;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin: 1.5rem 0;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-color);
+    }
+
+    .divider::before {
+        margin-right: 1rem;
+    }
+
+    .divider::after {
+        margin-left: 1rem;
+    }
+
+    /* Fix Modal Content Padding */
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        gap: 1rem;
+        /* Ensure gap between delete and save */
+    }
