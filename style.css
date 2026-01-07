@@ -632,7 +632,6 @@ body {
         background: rgba(30, 41, 59, 0.7);
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 20px;
-        /* More rounded */
         padding: 1.75rem;
         position: relative;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -643,7 +642,6 @@ body {
         display: flex;
         flex-direction: column;
         min-height: 240px;
-        /* Taller */
     }
 
     .business-card:hover {
@@ -656,7 +654,6 @@ body {
 
     .card-name {
         font-size: 1.8rem;
-        /* Much larger */
         font-weight: 800;
         color: #f8fafc;
         margin-bottom: 0.5rem;
@@ -676,7 +673,6 @@ body {
 
     .card-details {
         background: rgba(15, 23, 42, 0.6);
-        /* Visual frame */
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
         padding: 1.25rem;
@@ -684,10 +680,8 @@ body {
         flex-direction: column;
         gap: 0.8rem;
         font-size: 1.05rem;
-        /* Larger details */
         color: #cbd5e1;
         margin-top: auto;
-        /* Push to bottom */
         margin-bottom: 0.5rem;
     }
 
@@ -706,7 +700,6 @@ body {
         align-items: center;
         justify-content: center;
         opacity: 1;
-        /* Always visible */
         transition: all 0.2s;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         z-index: 20;
