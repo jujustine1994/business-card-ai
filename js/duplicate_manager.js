@@ -120,7 +120,8 @@ class DuplicateManager {
             this.renderDuplicatesModal(duplicates);
             this.app.showToast(`發現 ${duplicates.length} 組重複`);
         } else {
-            this.app.showToast('未發現重複名片', 'success');
+            // this.app.showToast('未發現重複名片', 'success');
+            alert('恭喜！未發現重複的名片。');
         }
     }
 

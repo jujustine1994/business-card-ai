@@ -96,6 +96,7 @@ class EditManager {
                     await window.FirebaseService.saveCardGroup(group);
                 }
             }
+            this.app.render(); // Update UI
             this.closeEditModal();
         } catch (e) {
             alert('儲存失敗: ' + e.message);
@@ -114,6 +115,7 @@ class EditManager {
         this.app.showLoading(true);
         try {
             await this.app.removePersonFromGroup(originalCompany, personIndex);
+            this.app.render(); // Update UI
             this.closeEditModal();
         } catch (e) {
             alert('刪除失敗: ' + e.message);

@@ -621,6 +621,45 @@ margin-top: 1rem;
     cursor: pointer;
 }
 
+
+/* Form Elements (Global) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #94a3b8;
+    /* Slate-400 */
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    /* Dark semi-transparent */
+    border: 1px solid #334155;
+    /* Slate-700 */
+    border-radius: 8px;
+    color: #f8fafc;
+    /* Slate-50 */
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    outline: none;
+}
+
 /* Duplicate Manager Styles */
 .duplicate-content {
     max-width: 800px;
